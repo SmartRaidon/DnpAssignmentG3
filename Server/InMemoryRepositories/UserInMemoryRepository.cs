@@ -5,7 +5,7 @@ namespace InMemoryRepositories;
 
 public class UserInMemoryRepository : IUserRepository
 {
-    List<User> users = new List<User>();
+    List<User> users = new();
     
     public Task<User> AddAsync(User user)
     {
@@ -44,6 +44,16 @@ public class UserInMemoryRepository : IUserRepository
         { 
             throw new InvalidOperationException($"User with ID '{id}' not found"); 
         } 
+        return Task.FromResult(userToRetrieve);
+    }
+
+    public Task<User> GetByUsernameAsync(string username)
+    {
+        User? userToRetrieve = users.SingleOrDefault(p => p.Username == username);
+        if (userToRetrieve is null)
+        {
+            throw new InvalidOperationException($"User with username '{username}' not found");
+        }
         return Task.FromResult(userToRetrieve);
     }
 
