@@ -51,4 +51,11 @@ public class CommentInMemoryRepository : ICommentRepository
     {
         return comments.AsQueryable();
     }
+    
+    public IQueryable<Comment> GetManyByPostId(int postId)
+    {
+        return comments
+            .Where(comment => comment.PostId == postId)
+            .AsQueryable();
+    }
 }
