@@ -19,7 +19,7 @@ while (Session.CurrentUser == null)
     Console.WriteLine("=== Welcome to the Forum ===");
     Console.WriteLine("1. Login");
     Console.WriteLine("2. Register");
-    Console.WriteLine("3. Tester");
+    // Console.WriteLine("3. Tester");
     Console.WriteLine("0. Exit");
     Console.Write("Choose: ");
 
@@ -32,6 +32,7 @@ while (Session.CurrentUser == null)
         case "2":
             await createUserView.ShowAsync();
             break;
+        /*
         case "3":
             var testUser = new User()
             {
@@ -41,6 +42,7 @@ while (Session.CurrentUser == null)
             };
             Session.CurrentUser = testUser;
             break;
+            */
         case "0":
             return;
         default:

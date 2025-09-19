@@ -6,6 +6,7 @@ namespace CLI.UI.Login;
 public class LoginView
 {
     private readonly IUserRepository userRepository;
+    private readonly User? currentUser;
 
     public LoginView(IUserRepository userRepository)
     {
@@ -23,8 +24,10 @@ public class LoginView
         Console.Write("Password: ");
         string? password = Console.ReadLine();
         
-        var user = await userRepository.GetByUsernameAsync(username ?? "");
-        if (user.Password == password)
+        var user = userRepository.GetMany()
+            .FirstOrDefault(u => u.Username == username && u.Password == password);
+        
+        if (user != null)
         {
             Session.CurrentUser = user;
             Console.WriteLine($"Welcome, {user.Username}!");

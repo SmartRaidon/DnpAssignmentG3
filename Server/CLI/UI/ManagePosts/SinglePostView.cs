@@ -29,7 +29,8 @@ public class SinglePostView
             Console.WriteLine($"{ post.Body }");
         
             Console.WriteLine("=== [ COMMENTS ] ===");
-            var comments = commentRepository.GetManyByPostId(post.Id);
+            var comments = commentRepository.GetMany()
+                .Where(c => c.PostId == post.Id);
             foreach (var comment in comments)
             {
                 //var commentAuthor = await userRepository.GetSingleAsync(comment.UserId);
