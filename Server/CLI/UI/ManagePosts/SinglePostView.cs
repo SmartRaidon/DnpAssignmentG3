@@ -8,16 +8,13 @@ public class SinglePostView
     private readonly IPostRepository postRepository;
     private readonly IUserRepository userRepository;
     private readonly ICommentRepository commentRepository;
-    private readonly User currentUser;
+    private readonly User? currentUser;
     public SinglePostView(IPostRepository postRepository, IUserRepository userRepository, ICommentRepository commentRepository)
     {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
         this.commentRepository = commentRepository;
-        if (Session.CurrentUser != null)
-        {
-            currentUser = Session.CurrentUser;
-        }
+        currentUser = Session.CurrentUser;
     }
 
     public async Task ShowAsync(int postId)
@@ -49,7 +46,7 @@ public class SinglePostView
 
             if (input == "/back") break;
 
-            if (input.StartsWith("/comment "))
+            if (input != null && input.StartsWith("/comment "))
             {
                 string text = input.Substring(9).Trim(); // removing the '/comment ' part - 9 chars total
 

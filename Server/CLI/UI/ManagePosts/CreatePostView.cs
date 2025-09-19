@@ -6,15 +6,12 @@ namespace CLI.UI.ManagePosts;
 public class CreatePostView
 {
     private readonly IPostRepository postRepository;
-    private readonly User currentUser;
+    private readonly User? currentUser;
 
     public CreatePostView(IPostRepository postRepository)
     {
         this.postRepository = postRepository;
-        if (Session.CurrentUser != null)
-        {
-            currentUser = Session.CurrentUser;
-        }
+        currentUser = Session.CurrentUser;
     }
 
     public async Task ShowAsync()
