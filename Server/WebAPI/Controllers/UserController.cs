@@ -17,7 +17,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    public async Task<IResult> GetUser([FromRoute] int id)
+    public async Task<IResult> GetUserAsync([FromRoute] int id)
     {
         User? user = await _userRepository.GetSingleAsync(id);
         UserDto dto = new()
@@ -28,8 +28,8 @@ public class UserController : ControllerBase
         return Results.Ok(dto);
     }
 
-    [HttpPost]
-    public async Task<ActionResult<UserDto>> AddUser([FromBody] CreateUserDto request)
+    [HttpPost("register")]
+    public async Task<ActionResult<UserDto>> RegisterAsync([FromBody] CreateUserDto request)
     {
         if (VerifyUserNameIsAvailable(request.UserName)) // verify username is available
         {
@@ -49,6 +49,20 @@ public class UserController : ControllerBase
         else
         {
             return BadRequest($"Username: {request.UserName} already exists.");
+        }
+    }
+
+    [HttpPost("login")]
+    public IActionResult Login([FromBody] CreateUserDto request)
+    {
+        var foundUser = _userRepository.GetMany().Any(u => u.Username == request.UserName && u.Password == request.Password);
+        if (foundUser)
+        {
+            return Ok(new { message = "Login successful!" }); // rewrite it to be usable, for now it's just a placeholder
+        }
+        else
+        {
+            return Unauthorized("Invalid username or password.");
         }
     }
     

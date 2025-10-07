@@ -23,8 +23,9 @@ public class UserFileRepository : IUserRepository
         List<User> users = JsonSerializer.Deserialize<List<User>>(usersAsJson)!; 
         int maxId = users.Count > 0 ? users.Max(c => c.Id) : 0; 
         user.Id = maxId + 1; 
-        users.Add(user); 
-        usersAsJson = JsonSerializer.Serialize(users); 
+        users.Add(user);
+        var options = new JsonSerializerOptions { WriteIndented = true }; // make it pretty
+        usersAsJson = JsonSerializer.Serialize(users, options);
         await File.WriteAllTextAsync(_filePath, usersAsJson); 
         return user; 
     }
@@ -41,7 +42,8 @@ public class UserFileRepository : IUserRepository
         existingUser.Id = user.Id;
         existingUser.Username = user.Username;
         existingUser.Password = user.Password;
-        usersAsJson = JsonSerializer.Serialize(users);
+        var options = new JsonSerializerOptions { WriteIndented = true }; // make it pretty
+        usersAsJson = JsonSerializer.Serialize(users, options);
         await File.WriteAllTextAsync(_filePath, usersAsJson);
     }
 
@@ -55,7 +57,8 @@ public class UserFileRepository : IUserRepository
             return;
         }
         users.Remove(existingUser);
-        usersAsJson = JsonSerializer.Serialize(users);
+        var options = new JsonSerializerOptions { WriteIndented = true }; // make it pretty
+        usersAsJson = JsonSerializer.Serialize(users, options);
         await File.WriteAllTextAsync(_filePath, usersAsJson);
     }
 

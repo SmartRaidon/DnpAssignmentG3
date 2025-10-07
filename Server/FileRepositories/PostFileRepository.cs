@@ -24,7 +24,8 @@ public class PostFileRepository : IPostRepository
         int maxId = posts.Count > 0 ? posts.Max(c => c.Id) : 0; 
         post.Id = maxId + 1; 
         posts.Add(post); 
-        postsAsJson = JsonSerializer.Serialize(posts); 
+        var options = new JsonSerializerOptions { WriteIndented = true }; // make it pretty
+        postsAsJson = JsonSerializer.Serialize(posts,  options); 
         await File.WriteAllTextAsync(_filePath, postsAsJson); 
         return post; 
     }
@@ -42,7 +43,8 @@ public class PostFileRepository : IPostRepository
         existingPost.Id = post.Id;
         existingPost.Title = post.Title;
         existingPost.Body = post.Body; 
-        postsAsJson = JsonSerializer.Serialize(posts);
+        var options = new JsonSerializerOptions { WriteIndented = true }; // make it pretty
+        postsAsJson = JsonSerializer.Serialize(posts, options);
         await File.WriteAllTextAsync(_filePath, postsAsJson);
     }
 
@@ -56,7 +58,8 @@ public class PostFileRepository : IPostRepository
             return;
         }
         posts.Remove(existingPost);
-        postsAsJson = JsonSerializer.Serialize(posts);
+        var options = new JsonSerializerOptions { WriteIndented = true }; // make it pretty
+        postsAsJson = JsonSerializer.Serialize(posts,  options);
         await File.WriteAllTextAsync(_filePath, postsAsJson);
     }
 
