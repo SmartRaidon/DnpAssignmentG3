@@ -16,6 +16,7 @@ public class UserController : ControllerBase
         _userRepository = userRepository;
     }
 
+    // GET - /User/{id}
     [HttpGet("{id:int}")]
     public async Task<IResult> GetUserAsync([FromRoute] int id)
     {
@@ -27,7 +28,16 @@ public class UserController : ControllerBase
         };
         return Results.Ok(dto);
     }
+    
+    // GET - /User
+    [HttpGet]
+    public async Task<IResult> GetUsers()
+    {
+        var users = await Task.Run(() => _userRepository.GetMany());
+        return Results.Ok(users);
+    }
 
+    // POST - create /User
     [HttpPost("register")]
     public async Task<ActionResult<UserDto>> RegisterAsync([FromBody] CreateUserDto request)
     {
@@ -52,6 +62,7 @@ public class UserController : ControllerBase
         }
     }
 
+    // POST - login /User
     [HttpPost("login")]
     public IActionResult Login([FromBody] CreateUserDto request)
     {
@@ -64,6 +75,30 @@ public class UserController : ControllerBase
         {
             return Unauthorized("Invalid username or password.");
         }
+    }
+    
+    // PUT - update /User/{id}
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<User>> UpdateUser(int id, [FromBody] CreateUserDto request)
+    {
+        var user = _userRepository.GetMany().FirstOrDefault(u => u.Id == id);
+        if (user == null)
+            return NotFound("User not found");
+        user.Username = request.UserName;
+        user.Password = request.Password;
+        await _userRepository.UpdateAsync(user);
+        return Ok(new { message = "User updated!"});
+    }
+    
+    // DELETE - /User/{id}
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult<User>> DeleteUser(int id)
+    {
+        var user = _userRepository.GetMany().FirstOrDefault(u => u.Id == id);
+        if (user == null)
+            return NotFound("User not found");
+        await _userRepository.DeleteAsync(id);
+        return Ok(new { message = "User deleted!"});
     }
     
     private bool VerifyUserNameIsAvailable(string userName)
