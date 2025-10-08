@@ -2,9 +2,9 @@
 
 public class CommentDto
 {
-    public int Id { get; set; }
-    public int PostId { get; set; }
-    public string Username { get; set; }
-    public int UserId { get; set; }
-    public string Content { get; set; }
+    public required int Id { get; set; }
+    public required int PostId { get; set; }
+    public required string Username { get; set; }
+    public required int UserId { get; set; }
+    public required string Content { get; set; }
 }
