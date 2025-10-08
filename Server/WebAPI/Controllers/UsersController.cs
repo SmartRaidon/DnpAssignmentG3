@@ -7,37 +7,42 @@ namespace WebAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")] 
-public class UserController : ControllerBase
+public class UsersController : ControllerBase
 {
     private readonly IUserRepository _userRepository;
     
-    public UserController(IUserRepository userRepository)
+    public UsersController(IUserRepository userRepository)
     {
         _userRepository = userRepository;
     }
 
-    // GET - /User/{id}
+    // GET - /Users/{id}
     [HttpGet("{id:int}")]
-    public async Task<IResult> GetUserAsync([FromRoute] int id)
+    public async Task<IActionResult> GetUserAsync([FromRoute] int id)
     {
-        User? user = await _userRepository.GetSingleAsync(id);
+        User user = await _userRepository.GetSingleAsync(id);
         UserDto dto = new()
         {
             Id = user.Id,
             UserName = user.Username
         };
-        return Results.Ok(dto);
+        return Ok(dto);
     }
     
-    // GET - /User
+    // GET - /Users
     [HttpGet]
-    public async Task<IResult> GetUsers()
+    public async Task<IActionResult> GetUsersAsync()
     {
-        var users = await Task.Run(() => _userRepository.GetMany());
-        return Results.Ok(users);
+        var users = await Task.Run(() => _userRepository.GetMany()
+            .Select(u => new UserDto
+        {
+            Id = u.Id,
+            UserName = u.Username
+        }).ToList());
+        return Ok(users);
     }
 
-    // POST - create /User
+    // POST - create /Users
     [HttpPost("register")]
     public async Task<ActionResult<UserDto>> RegisterAsync([FromBody] CreateUserDto request)
     {
@@ -62,7 +67,7 @@ public class UserController : ControllerBase
         }
     }
 
-    // POST - login /User
+    // POST - login /Users
     [HttpPost("login")]
     public IActionResult Login([FromBody] CreateUserDto request)
     {
@@ -77,9 +82,9 @@ public class UserController : ControllerBase
         }
     }
     
-    // PUT - update /User/{id}
+    // PUT - update /Users/{id}
     [HttpPut("{id:int}")]
-    public async Task<ActionResult<User>> UpdateUser(int id, [FromBody] CreateUserDto request)
+    public async Task<ActionResult<UserDto>> UpdateUserAsync([FromRoute] int id, [FromBody] CreateUserDto request)
     {
         var user = _userRepository.GetMany().FirstOrDefault(u => u.Id == id);
         if (user == null)
@@ -87,18 +92,27 @@ public class UserController : ControllerBase
         user.Username = request.UserName;
         user.Password = request.Password;
         await _userRepository.UpdateAsync(user);
-        return Ok(new { message = "User updated!"});
+        var response = new UserDto
+        {
+            Id = user.Id,
+            UserName = user.Username
+        };
+        return Ok(new
+        {
+            message = "User successfully updated!",
+            user = response
+        });
     }
     
-    // DELETE - /User/{id}
+    // DELETE - /Users/{id}
     [HttpDelete("{id:int}")]
-    public async Task<ActionResult<User>> DeleteUser(int id)
+    public async Task<ActionResult<User>> DeleteUserAsync([FromRoute] int id)
     {
         var user = _userRepository.GetMany().FirstOrDefault(u => u.Id == id);
         if (user == null)
             return NotFound("User not found");
         await _userRepository.DeleteAsync(id);
-        return Ok(new { message = "User deleted!"});
+        return NoContent();
     }
     
     private bool VerifyUserNameIsAvailable(string userName)
