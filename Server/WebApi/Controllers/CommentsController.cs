@@ -15,7 +15,7 @@ public class CommentsController: ControllerBase
     }
 
     [HttpGet]
-    public  IActionResult GetAll([FromRoute] int postId)
+    public  IActionResult GetAll([FromRoute] int postId, [FromQuery] string? username,  [FromQuery] int? userId)
     {
         var comments = repository.GetMany().Where(com => com.PostId==postId).ToList();
         if (comments ==null ||comments.Count == 0)
@@ -23,6 +23,18 @@ public class CommentsController: ControllerBase
             //throw new Exception("No Comments Found");
             return NotFound();
         }
+
+        if (!string.IsNullOrWhiteSpace(username))
+        {
+            comments= comments.Where(com =>  com.Username.Contains(username,StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+
+        if (userId.HasValue)
+        {
+            comments= comments.Where(com => com.UserId==userId.Value).ToList();
+        }
+
+     
 
         var commentsDTO = comments.Select(comment => new CommentDto()
             {

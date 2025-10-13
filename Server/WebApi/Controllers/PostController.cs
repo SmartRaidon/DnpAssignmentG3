@@ -16,14 +16,27 @@ public class PostController: ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetAll()
+    public IActionResult GetAll([FromQuery] string? title, [FromQuery] int? userId)
     {
         var posts =  repo.GetMany().ToList();
+        if (!string.IsNullOrWhiteSpace(title))
+        {
+            posts = posts
+                .Where(p => p.Title.Contains(title, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+        if (userId.HasValue)
+        {
+            posts = posts
+                .Where(p => p.UserId == userId.Value)
+                .ToList();
+        }
+        
         if (posts.Count ==0 || posts == null)
         {
             return NotFound();
         }
-      
+        
         var postDTO = posts.Select(
             post => new PostDto
             {
@@ -107,5 +120,6 @@ public class PostController: ControllerBase
         return NoContent();
         
     }
+
 
 }

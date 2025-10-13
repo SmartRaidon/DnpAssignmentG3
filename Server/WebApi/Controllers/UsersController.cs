@@ -18,10 +18,17 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetAll()
+    public IActionResult GetAll([FromQuery] string? username)
     {
         var userList = repository.GetMany().ToList();
-        if (userList.Count == 0 || userList == null) return NotFound();
+  
+        if (!string.IsNullOrWhiteSpace(username))
+        {
+            userList = userList
+                .Where(u => u.Username.Contains(username, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+        if (userList.Count == 0) return NotFound("No users found matching criteria.");
         var usersDTO = userList.Select(
             user => new UserDto
             {
