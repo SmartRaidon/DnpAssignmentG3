@@ -56,9 +56,9 @@ public class PostsController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<ActionResult> Update([FromBody] UpdatePostDTO request)
+    public async Task<ActionResult> Update([FromRoute] int id, [FromBody] UpdatePostDTO request)
     {
-        Post postToUpdate = MapDtoToPost(request);
+        Post postToUpdate = MapDtoToPost(id, request);
 
         await _postRepository.UpdateAsync(postToUpdate);
 
@@ -84,11 +84,11 @@ public class PostsController : ControllerBase
         };
     }
 
-    private Post MapDtoToPost(UpdatePostDTO post)
+    private Post MapDtoToPost(int id, UpdatePostDTO post)
     {
         return new Post()
         {
-            Id = post.Id,
+            Id = id,
             UserId = post.UserId,
             Title = post.Title,
             Body = post.Body

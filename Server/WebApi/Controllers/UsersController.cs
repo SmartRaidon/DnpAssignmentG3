@@ -54,9 +54,9 @@ public class UsersController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<IActionResult> Update([FromBody] UpdateUserDTO request)
+    public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateUserDTO request)
     {
-        User userToUpdate = MapDtoToUser(request);
+        User userToUpdate = MapDtoToUser(id, request);
         
         await _userRepository.UpdateAsync(userToUpdate);
 
@@ -81,11 +81,11 @@ public class UsersController : ControllerBase
         };
     }
     
-    private User MapDtoToUser(UpdateUserDTO user)
+    private User MapDtoToUser(int id, UpdateUserDTO user)
     {
         return new User()
         {
-            Id = user.Id,
+            Id = id,
             Username = user.Username,
             Password = user.Password
         };

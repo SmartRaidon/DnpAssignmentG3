@@ -54,10 +54,10 @@ public class CommentsController : ControllerBase
         return Ok(userToReturn);
     }
 
-    [HttpPut]
-    public async Task<IActionResult> Update([FromBody] UpdateCommentDTO request)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateCommentDTO request)
     {
-        Comment commentToUpdate = MapDtoToComment(request);
+        Comment commentToUpdate = MapDtoToComment(id, request);
         
         await _commentRepository.UpdateAsync(commentToUpdate);
 
@@ -72,7 +72,7 @@ public class CommentsController : ControllerBase
 
         return Ok();
     }
-
+    //convert entity to CommentDTO for sending API rensonses
     private CommentDTO MapCommentToDto(Comment comment)
     {
         return new CommentDTO()
@@ -83,19 +83,19 @@ public class CommentsController : ControllerBase
             Body = comment.Body
         };
     }
-    
-    private Comment MapDtoToComment(UpdateCommentDTO comment)
+    //converts UpdateCommentDTO into entity for updating
+    private Comment MapDtoToComment(int id, UpdateCommentDTO comment)
     {
         return new Comment()
         {
-            Id = comment.Id,
+            Id = id,
             UserId = comment.UserId,
             PostId = comment.PostId,
             Body = comment.Body
         };
     }
 
-
+    // Converts list of comments to a list of CommentDTO for API responses
     private List<CommentDTO> MapCommentsToDto(IQueryable<Comment> comments)
     {
         List<CommentDTO> commentDtos = new List<CommentDTO>();
@@ -108,3 +108,4 @@ public class CommentsController : ControllerBase
         return commentDtos;
     }
 }
+//converts data between the different layers f the application
