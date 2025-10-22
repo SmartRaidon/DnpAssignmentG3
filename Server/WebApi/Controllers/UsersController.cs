@@ -53,7 +53,7 @@ public class UsersController : ControllerBase
         return Ok(userToReturn);
     }
 
-    [HttpPut]
+    [HttpPut("{id}")]
     public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateUserDTO request)
     {
         User userToUpdate = MapDtoToUser(id, request);

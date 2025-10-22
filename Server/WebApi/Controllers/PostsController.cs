@@ -55,7 +55,7 @@ public class PostsController : ControllerBase
         return Ok(postToReturn);
     }
 
-    [HttpPut]
+    [HttpPut("{id}")]
     public async Task<ActionResult> Update([FromRoute] int id, [FromBody] UpdatePostDTO request)
     {
         Post postToUpdate = MapDtoToPost(id, request);
