@@ -48,7 +48,9 @@ public class UsersController : ControllerBase
         };
         User userAdded = await _userRepository.AddAsync(userToAdd);
 
-        return CreatedAtAction(nameof(GetSingle), new { id = userAdded.Id }, request);
+        UserDTO userToReturn = MapUserToDto(userAdded);
+        
+        return Ok(userToReturn);
     }
 
     [HttpPut]

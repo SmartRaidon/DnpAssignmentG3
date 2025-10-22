@@ -50,7 +50,9 @@ public class PostsController : ControllerBase
 
         Post postAdded = await _postRepository.AddAsync(postToAdd);
 
-        return CreatedAtAction(nameof(GetSingle), new { id = postAdded.Id }, request);
+        PostDTO postToReturn = MapPostToDto(postAdded);
+        
+        return Ok(postToReturn);
     }
 
     [HttpPut]

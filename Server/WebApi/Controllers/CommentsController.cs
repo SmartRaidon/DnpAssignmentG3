@@ -49,7 +49,9 @@ public class CommentsController : ControllerBase
         };
         Comment commentAdded = await _commentRepository.AddAsync(commentToAdd);
 
-        return CreatedAtAction(nameof(GetSingle), new { id = commentAdded.Id }, request);
+        CommentDTO userToReturn = MapCommentToDto(commentAdded);
+        
+        return Ok(userToReturn);
     }
 
     [HttpPut]
