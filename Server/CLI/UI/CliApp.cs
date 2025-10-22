@@ -1,6 +1,8 @@
 ﻿using CLI.UI.ManageComment;
 using CLI.UI.ManagePost;
 using CLI.UI.ManageUsers;
+using CLI.UI.Views.ManagePost;
+using CLI.UI.Views.ManageUsers;
 using Entities;
 using RepositoryContracts;
 
@@ -208,7 +210,7 @@ public class CliApp
                         }
                         case 4:
                         {
-                            await _listPostsView.getManyAsync();
+                            await _listPostsView.GetManyAsync();
                             break;
                         }
                         case 5:

@@ -20,7 +20,7 @@ public class CreateCommentView
         {
             UserId = userId,
             PostId = postId,
-            Content = content
+            Body = content
         };
 
         Comment createdComment =
