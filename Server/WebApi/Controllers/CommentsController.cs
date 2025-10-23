@@ -15,7 +15,7 @@ public class CommentsController: ControllerBase
     }
 
     [HttpGet]
-    public  IActionResult GetAll([FromRoute] int postId, [FromQuery] string? username,  [FromQuery] int? userId)
+    public  IActionResult GetAll([FromRoute] int postId,  [FromQuery] int? userId)
     {
         var comments = repository.GetMany().Where(com => com.PostId==postId).ToList();
         if (comments ==null ||comments.Count == 0)
@@ -24,10 +24,7 @@ public class CommentsController: ControllerBase
             return NotFound();
         }
 
-        if (!string.IsNullOrWhiteSpace(username))
-        {
-            comments= comments.Where(com =>  com.Username.Contains(username,StringComparison.OrdinalIgnoreCase)).ToList();
-        }
+ 
 
         if (userId.HasValue)
         {
@@ -42,7 +39,7 @@ public class CommentsController: ControllerBase
                 PostId = comment.PostId,
                 Content = comment.Content,
                 UserId = comment.UserId,
-                Username = comment.Username
+
             }
         );
         
@@ -50,10 +47,10 @@ public class CommentsController: ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task <IActionResult> GetById([FromRoute] int postId)
+    public async Task <IActionResult> GetById([FromRoute] int postId, [FromRoute] int id)
     {
-        var commentById = await repository.GetSingleAsync(postId);
-        if (commentById == null)
+        var commentById = await repository.GetSingleAsync(id);
+        if (commentById == null || commentById.PostId != postId)
         {
             return NotFound();//same as throwing exception like above method
         }
@@ -64,7 +61,7 @@ public class CommentsController: ControllerBase
             PostId = commentById.PostId,
             Content = commentById.Content,
             UserId = commentById.UserId,
-            Username = commentById.Username
+   
         };
         
         return Ok(commentByIdDto);
@@ -76,7 +73,6 @@ public class CommentsController: ControllerBase
         var commentToCreate = new Comment
         {
             PostId = postId,
-            Username = comment.Username,
             Content = comment.Content,
             UserId = comment.UserId
         };
@@ -87,38 +83,40 @@ public class CommentsController: ControllerBase
             PostId = commentToCreate.PostId,
             Content = commentToCreate.Content,
             UserId = commentToCreate.UserId,
-            Username = commentToCreate.Username
         };
         return CreatedAtAction(nameof(GetById), new { postId = postId, id = commentToCreate.Id }, resultOfCreation);
     }
 
     [HttpPut("{id}")]
-    public async Task <IActionResult> Update([FromRoute] int postId, CommentUpdateDto comment)
+    public async Task<IActionResult> Update([FromRoute] int postId, [FromRoute] int id, CommentUpdateDto comment)
     {
-        
-        var existingComment = await repository.GetSingleAsync(postId);
-        if (existingComment == null)
+        var existingComment = await repository.GetSingleAsync(id);
+        if (existingComment == null || existingComment.PostId != postId)
         {
             return NotFound();
         }
+
         existingComment.Content = comment.Content;
-     
         await repository.UpdateAsync(existingComment);
         return NoContent();
-        
     }
 
+
+
+
+
     [HttpDelete("{id}")]
-    public async Task <IActionResult> Delete([FromRoute] int postId)
+    public async Task<IActionResult> Delete([FromRoute] int postId, [FromRoute] int id)
     {
-        var commentToDelete = await repository.GetSingleAsync(postId);
-        if (commentToDelete == null)
+        var commentToDelete = await repository.GetSingleAsync(id);
+        if (commentToDelete == null || commentToDelete.PostId != postId)
         {
             return NotFound();
         }
 
-        await repository.DeleteAsync(postId);
+        await repository.DeleteAsync(id);
         return NoContent();
     }
+
 
 }
