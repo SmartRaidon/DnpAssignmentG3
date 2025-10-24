@@ -24,7 +24,8 @@ public class CommentFileRepository : ICommentRepository
         int maxId = comments.Count > 0 ? comments.Max(c => c.Id) : 0; 
         comment.Id = maxId + 1; 
         comments.Add(comment); 
-        commentsAsJson = JsonSerializer.Serialize(comments); 
+        var options = new JsonSerializerOptions { WriteIndented = true }; // make it pretty
+        commentsAsJson = JsonSerializer.Serialize(comments, options); 
         await File.WriteAllTextAsync(_filePath, commentsAsJson); 
         return comment; 
     }
@@ -43,7 +44,8 @@ public class CommentFileRepository : ICommentRepository
         existingComment.Content = comment.Content;
         existingComment.PostId = comment.PostId; 
         existingComment.Id = comment.Id;
-        commentsAsJson = JsonSerializer.Serialize(comments);
+        var options = new JsonSerializerOptions { WriteIndented = true }; // make it pretty
+        commentsAsJson = JsonSerializer.Serialize(comments, options);
         await File.WriteAllTextAsync(_filePath, commentsAsJson);
     }
 
@@ -57,7 +59,8 @@ public class CommentFileRepository : ICommentRepository
             return; // we don't do anything
         }
         comments.Remove(existingComment);
-        commentsAsJson = JsonSerializer.Serialize(comments);
+        var options = new JsonSerializerOptions { WriteIndented = true }; // make it pretty
+        commentsAsJson = JsonSerializer.Serialize(comments, options);
         await File.WriteAllTextAsync(_filePath, commentsAsJson);
     }
 
