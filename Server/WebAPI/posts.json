@@ -1,0 +1,37 @@
+[
+  {
+    "Id": 1,
+    "Title": "Title1",
+    "Body": "Title1body",
+    "Author": null,
+    "UserId": 3
+  },
+  {
+    "Id": 2,
+    "Title": "2title",
+    "Body": "2body",
+    "Author": null,
+    "UserId": 3
+  },
+  {
+    "Id": 3,
+    "Title": "Sanyipost",
+    "Body": "textnjsdtjtkrnj",
+    "Author": null,
+    "UserId": 1
+  },
+  {
+    "Id": 4,
+    "Title": "Sanyipost",
+    "Body": "textnjsdtjtkrnj",
+    "Author": null,
+    "UserId": 1
+  },
+  {
+    "Id": 5,
+    "Title": "goonposting",
+    "Body": "goongoogn",
+    "Author": "Sandor",
+    "UserId": 1
+  }
+]
