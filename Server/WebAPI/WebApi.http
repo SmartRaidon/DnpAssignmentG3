@@ -1,0 +1,6 @@
+﻿@WebApi_HostAddress = http://localhost:5000
+
+GET {{WebApi_HostAddress}}/posts
+Accept: application/json
+
+###
