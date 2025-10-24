@@ -27,7 +27,7 @@ public class CreatePostView
         Console.Write("> ");
         string? body = Console.ReadLine();
 
-        if (title != null && body != null)
+        if (title != null && body != null && currentUser != null)
         {
             await AddPostAsync(title, body, currentUser);
         }
