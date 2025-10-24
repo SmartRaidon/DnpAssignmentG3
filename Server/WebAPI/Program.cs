@@ -36,5 +36,5 @@ if (app.Environment.IsDevelopment()) // this shit returns false omg that's why I
 }
 
 // app.UseHttpsRedirection();
-app.MapGet("/", () => "Web API is running!");
+app.MapGet("/", () => "Web API is running!"); //this line gives a WebApi line on swagger :)
 app.Run();
