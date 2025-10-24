@@ -32,6 +32,6 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "swagger"; // UI will be available at http://localhost:<port>/swagger
 });
 
-// app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 app.MapGet("/", () => "Web API is running!"); //this line gives a WebApi line on swagger :)
 app.Run();
