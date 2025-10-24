@@ -1,7 +1,14 @@
+using System.Collections.Specialized;
 using FileRepositories;
+using Microsoft.AspNetCore.Components.Sections;
 using RepositoryContracts;
 
-var builder = WebApplication.CreateBuilder(args);
+// setting the developer environment manually
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    Args = args,
+    EnvironmentName = Environments.Development
+});
 
 builder.Services.AddControllers();
 
@@ -18,19 +25,17 @@ builder.Services.AddScoped<ICommentRepository, CommentFileRepository>();
 var app = builder.Build();
 
 app.MapControllers();
-//app.Environment.EnvironmentName = "Development"; // setting this manually as it caused some issues
 
 // checking environment 
 Console.WriteLine($"Environment: {app.Environment.EnvironmentName}");
+Console.WriteLine(app.Environment.IsDevelopment());
 
 // Configure the HTTP request pipeline.
-//app.UseOpenApi();       // // with .net10
-app.UseSwagger();
-app.UseSwaggerUI(c =>
+if (app.Environment.IsDevelopment())
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"); // points to the generated JSON
-    c.RoutePrefix = "swagger"; // UI will be available at http://localhost:<port>/swagger
-});
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.UseHttpsRedirection();
 app.MapGet("/", () => "Web API is running!"); //this line gives a WebApi line on swagger :)
