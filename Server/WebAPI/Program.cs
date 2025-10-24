@@ -18,22 +18,19 @@ builder.Services.AddScoped<ICommentRepository, CommentFileRepository>();
 var app = builder.Build();
 
 app.MapControllers();
-app.Environment.EnvironmentName = "Development"; // setting this manually as it caused some issues
+//app.Environment.EnvironmentName = "Development"; // setting this manually as it caused some issues
 
 // checking environment 
 Console.WriteLine($"Environment: {app.Environment.EnvironmentName}");
+
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment()) // this shit returns false omg that's why I couldn't see the swagger
+//app.UseOpenApi();       // // with .net10
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    Console.WriteLine("Development environment detected! [ OMG ]");
-    //app.UseOpenApi();       // // with .net10
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"); // points to the generated JSON
-        c.RoutePrefix = "swagger"; // UI will be available at http://localhost:<port>/swagger
-    });
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"); // points to the generated JSON
+    c.RoutePrefix = "swagger"; // UI will be available at http://localhost:<port>/swagger
+});
 
 // app.UseHttpsRedirection();
 app.MapGet("/", () => "Web API is running!"); //this line gives a WebApi line on swagger :)
