@@ -46,11 +46,11 @@ public class UsersController : ControllerBase
     [HttpPost("register")]
     public async Task<ActionResult<UserDto>> RegisterAsync([FromBody] CreateUserDto request)
     {
-        if (VerifyUserNameIsAvailable(request.UserName)) // verify username is available
+        if (VerifyUserNameIsAvailable(request.Username)) // verify username is available
         {
             User user = new() // create user
             {
-                Username = request.UserName,
+                Username = request.Username,
                 Password = request.Password
             };
             User created = await _userRepository.AddAsync(user); // add user to repository
@@ -63,7 +63,7 @@ public class UsersController : ControllerBase
         }
         else
         {
-            return BadRequest($"Username: {request.UserName} already exists.");
+            return BadRequest($"Username: {request.Username} already exists.");
         }
     }
 
@@ -71,7 +71,7 @@ public class UsersController : ControllerBase
     [HttpPost("login")]
     public IActionResult Login([FromBody] CreateUserDto request)
     {
-        var foundUser = _userRepository.GetMany().Any(u => u.Username == request.UserName && u.Password == request.Password);
+        var foundUser = _userRepository.GetMany().Any(u => u.Username == request.Username && u.Password == request.Password);
         if (foundUser)
         {
             return Ok(new { message = "Login successful!" }); // rewrite it to be usable, for now it's just a placeholder
@@ -89,7 +89,7 @@ public class UsersController : ControllerBase
         var user = _userRepository.GetMany().FirstOrDefault(u => u.Id == id);
         if (user == null)
             return NotFound("User not found");
-        user.Username = request.UserName;
+        user.Username = request.Username;
         user.Password = request.Password;
         await _userRepository.UpdateAsync(user);
         var response = new UserDto

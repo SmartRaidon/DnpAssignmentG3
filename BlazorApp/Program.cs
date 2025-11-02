@@ -1,4 +1,5 @@
 using BlazorApp.Components;
+using BlazorApp.Services;
 
 // setting the developer environment manually
 var builder = WebApplication.CreateBuilder(new WebApplicationOptions
@@ -11,10 +12,8 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddScoped(sp => new HttpClient 
-{
-    BaseAddress = new Uri("https://localhost:5001")
-});
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:5001") });
+builder.Services.AddScoped<HttpUserService>();
 
 var app = builder.Build();
 
