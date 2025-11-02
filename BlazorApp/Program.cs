@@ -10,7 +10,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddScoped(sp =>
 {
     var client = new HttpClient();
-    client.BaseAddress = new Uri("https://localhost:5098"); // Update with your Web API URL
+    client.BaseAddress = new Uri("http://localhost:5098"); // Update with your Web API URL
     client.DefaultRequestHeaders.Add("Accept", "application/json");
     return client;
 });
