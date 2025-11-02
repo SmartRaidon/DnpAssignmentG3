@@ -1,0 +1,93 @@
+﻿@page "/users/edit/{UserId:int}"
+@using ApiContracts.DTO.User
+@using BlazorApp.Services
+@inject IUserService UserService
+@inject NavigationManager Navigation
+
+<PageTitle>Edit user</PageTitle>
+
+@if (isLoading)
+{
+    <p>Loading user...</p>
+}
+else if (existingUser == null)
+{
+    <h3>User not found</h3>
+    <button class="btn btn-secondary" @onclick="Back">Go back</button>
+}
+else
+{
+    <h3>User EDIT:</h3>
+
+    <EditForm Model="@updateDto" OnValidSubmit="UpdateUser">
+        <DataAnnotationsValidator />
+        <div class="mb-3">
+            <label class="form-label">Username: </label>
+            <InputText @bind-Value="updateDto.Username" placeholder="username" class="form-control" />
+            <ValidationMessage For="@(() => updateDto.Username)" />
+        </div>
+        <div class="mb-3">
+            <small class="text-muted">Current password: @existingUser.Password</small>
+            <br />
+            <small class="text-muted">(Password cannot be changed)</small>
+        </div>
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Update User!</button>
+            <button type="button" class="btn btn-secondary" @onclick="Back">Go back</button>
+        </div>
+    </EditForm>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger">@errorMessage</div>
+    }
+}
+
+@code {
+    [Parameter]
+    public int UserId { get; set; }
+
+    private UserDto? existingUser;
+    private UserUpdateDto updateDto = new() { Username = string.Empty };
+    private bool isLoading = true;
+    private string errorMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            existingUser = await UserService.GetUserByIdAsync(UserId);
+            if (existingUser != null)
+            {
+                updateDto.Username = existingUser.Username;
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading user: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task UpdateUser()
+    {
+        try
+        {
+            errorMessage = string.Empty;
+            await UserService.UpdateUserAsync(UserId, updateDto);
+            Navigation.NavigateTo("/users");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error updating user: {ex.Message}";
+        }
+    }
+
+    private void Back()
+    {
+        Navigation.NavigateTo("/users");
+    }
+}

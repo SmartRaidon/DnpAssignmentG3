@@ -1,0 +1,55 @@
+﻿@page "/users/create"
+@using ApiContracts.DTO.User
+@using BlazorApp.Services
+@inject IUserService UserService
+@inject NavigationManager Navigation
+
+<PageTitle>Create user</PageTitle>
+<h3>Create USER:</h3>
+
+<EditForm Model="@user" OnValidSubmit="CreateUser">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <label class="form-label">Username: </label>
+        <InputText @bind-Value="user.Username" placeholder="username to create" class="form-control" />
+        <ValidationMessage For="@(() => user.Username)" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Password: </label>
+        <InputText type="password" @bind-Value="user.Password" placeholder="password" class="form-control" />
+        <ValidationMessage For="@(() => user.Password)" />
+    </div>
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary">Create User!</button>
+        <button type="button" class="btn btn-secondary" @onclick="Back">Go back</button>
+    </div>
+</EditForm>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+
+@code {
+    private UserCreateDto user = new() { Username = string.Empty, Password = string.Empty };
+    private string errorMessage = string.Empty;
+
+    private async Task CreateUser()
+    {
+        try
+        {
+            errorMessage = string.Empty;
+            await UserService.AddUserAsync(user);
+            Navigation.NavigateTo("/users");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error creating user: {ex.Message}";
+        }
+    }
+
+    private void Back()
+    {
+        Navigation.NavigateTo("/users");
+    }
+}
