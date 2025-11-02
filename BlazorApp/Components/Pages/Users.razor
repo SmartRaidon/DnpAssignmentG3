@@ -23,18 +23,18 @@
 else if (users == null || !users.Any())
 {
     <p>No users found.</p>
-    <Alert Color="AlertColor.Danger">
-       @allertToShow
+    <Alert Color="AlertColor.Danger" value="@allertToShow">
     </Alert>
 }
 else
 {
     <table class="table">
         <thead>
-        <tr> <th>ID</th></tr>
+        <tr> <th>ID</th>
        <th>Username</th>
         <th>Password</th>
-       <th>ActionToDo</th>
+        <th>ActionToDo</th>
+        </tr>
         </thead>
         <tbody>
         @foreach (var user in users)
@@ -63,34 +63,38 @@ else
 
 @code{
 
-    private List<UserDto> users;
+    private List<UserDto> users = new List<UserDto>();
     private string searchByUsername = string.Empty;
     private bool isLoading = true;
-    private string allertToShow;
+    private string allertToShow =  string.Empty;
     protected override async Task OnInitializedAsync()
     {
-        await Task.Run(LoadUsers);
+        await LoadUsers();
     }
 
     private async Task LoadUsers()
     {
 
         isLoading = true;
+        allertToShow = string.Empty;
         try
         {
-            users = await UserService.GetAllUsersAsync(string.IsNullOrWhiteSpace(searchByUsername) ? null : searchByUsername);
-
+            var loadedusers = await UserService.GetAllUsersAsync(string.IsNullOrWhiteSpace(searchByUsername) ? null : searchByUsername);
+            users = loadedusers ?? new List<UserDto>(); 
         }
         catch (Exception ex)
         {
             allertToShow = "Error loading users";
-            Console.Write(ex.Message);
+            Console.WriteLine($"Error: {ex.Message}");
+            users = new List<UserDto>();
+            
         }
         finally
         {
             
-            System.Threading.Thread.Sleep(2200);
+           //System.Threading.Thread.Sleep(1000);
             isLoading = false;
+            StateHasChanged();
         }
     }
     private async Task SearchUsers()
