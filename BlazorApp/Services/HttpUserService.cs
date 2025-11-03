@@ -20,7 +20,11 @@ public class HttpUserService: IUserService
             : $"{BaseUrl}?username={Uri.EscapeDataString(username)}";
         var response = await _httpClient.GetAsync(url);
         response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<List<UserDto>>() ?? new List<UserDto>();
+        var payload = await response.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<List<UserDto>>(payload, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        }) ?? new List<UserDto>();
     }
 
     public async Task<UserDto?> GetUserByIdAsync(int id)
@@ -31,8 +35,11 @@ public class HttpUserService: IUserService
             return null;
         }
         response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<UserDto>();
-        
+        var payload = await response.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<UserDto>(payload,new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
     }
     public async Task<UserDto> AddUserAsync(UserCreateDto request)
     {
@@ -52,13 +59,15 @@ public class HttpUserService: IUserService
     public async Task UpdateUserAsync(int id, UserUpdateDto request)
     {
         var response = await _httpClient.PutAsJsonAsync($"{BaseUrl}/{id}", request);
-        response.EnsureSuccessStatusCode();
+        var payload = await response.Content.ReadAsStringAsync();
+        if (!response.IsSuccessStatusCode) throw new Exception(payload);
     }
 
     public async Task DeleteUserAsync(int id)
     {
         var response = await _httpClient.DeleteAsync($"{BaseUrl}/{id}");
-        response.EnsureSuccessStatusCode();
+        var payload = await response.Content.ReadAsStringAsync();
+        if (!response.IsSuccessStatusCode) throw new Exception(payload);
     }
 
 

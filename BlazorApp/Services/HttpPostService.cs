@@ -1,4 +1,5 @@
-﻿using ApiContracts.DTO.Post;
+﻿using System.Text.Json;
+using ApiContracts.DTO.Post;
 
 namespace BlazorApp.Services;
 
@@ -22,7 +23,11 @@ public class HttpPostService: IPostService
         if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
             return new List<PostDto>();
         response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<List<PostDto>>() ?? new List<PostDto>();
+        var payload = await response.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<List<PostDto>>(payload, new JsonSerializerOptions
+        {
+        PropertyNameCaseInsensitive = true
+        }) ?? new List<PostDto>();
     }
 
     public async Task<PostDto?> GetPostByIdAsync(int id)
@@ -30,25 +35,35 @@ public class HttpPostService: IPostService
         var response = await _httpClient.GetAsync($"{BaseUrl}/{id}");
         if (response.StatusCode == System.Net.HttpStatusCode.NotFound) return null;
         response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<PostDto>();
+        var payload = await response.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<PostDto>(payload, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
     }
 
     public async Task<PostDto> CreatePostAsync(PostCreateDto request)
     {
         var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}", request);
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<PostDto>() ?? throw new Exception("failed to create post");
+        var payload = await response.Content.ReadAsStringAsync();
+        if (!response.IsSuccessStatusCode) throw new Exception(payload);
+        return JsonSerializer.Deserialize<PostDto>(payload, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        })!;
     }
 
     public async Task UpdatePostAsync(int id, PostUpdateDto request)
     {
         var response = await _httpClient.PutAsJsonAsync($"{BaseUrl}/{id}", request);
-        response.EnsureSuccessStatusCode();
+        var payload = await response.Content.ReadAsStringAsync();
+        if (!response.IsSuccessStatusCode) throw new Exception(payload);
     }
 
     public async Task DeletePostAsync(int id)
     {
         var response = await _httpClient.DeleteAsync($"{BaseUrl}/{id}");
-        response.EnsureSuccessStatusCode();
+        var payload = await response.Content.ReadAsStringAsync();
+        if (!response.IsSuccessStatusCode) throw new Exception(payload);
     }
 }

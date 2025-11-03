@@ -4,22 +4,22 @@
 @inject ICommentService CommentService
 @inject NavigationManager Navigation
 <PageTitle>Create comment</PageTitle>
-<h3>Create comment for @PostId</h3>
+<h3 class="text-center text-primary">Create comment for @PostId</h3>
 
 <EditForm Model="@commentToCreate" OnValidSubmit="@CreateComment">
     <DataAnnotationsValidator />
     <div class="mb-3">
-        <label class="form-label"> User ID: </label>
+        <label class="form-label text-primary"> User ID: </label>
         <InputNumber @bind-Value="commentToCreate.UserId" class="form-control" />
         <ValidationMessage For="@(() => commentToCreate.UserId)"/>
     </div>
     <div class="mb-3">
-        <label class="form-label"> Content: </label>
+        <label class="form-label text-primary"> Content: </label>
         <InputTextArea @bind-Value="commentToCreate.Content" class="form-control" />
         <ValidationMessage For="@( () => commentToCreate.Content)"/>
     </div>
     <div class="mb-3">
-        @if (commentToCreate.UserId >= 0)
+        @if (commentToCreate.UserId > 0 && commentToCreate.Content.Length >0)
         {
             <button type="submit" class="btn btn-primary">Create</button>
         }

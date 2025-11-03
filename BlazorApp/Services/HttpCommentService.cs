@@ -1,4 +1,5 @@
-﻿using ApiContracts.DTO.Comment;
+﻿using System.Text.Json;
+using ApiContracts.DTO.Comment;
 
 namespace BlazorApp.Services;
 
@@ -20,8 +21,11 @@ public class HttpCommentService:ICommentService
         if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
             return new List<CommentDto>();
         response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<List<CommentDto>>() ?? new List<CommentDto>();
-    }
+        var payload = await response.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<List<CommentDto>>(payload, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        }) ?? new List<CommentDto>();    }
 
     public async Task<CommentDto?> GetCommentByIdAsync(int postId, int commentId)
     {
@@ -29,26 +33,34 @@ public class HttpCommentService:ICommentService
         if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
             return null;
         response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<CommentDto>();
+        var payload = await response.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<CommentDto>(payload, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
     }
 
     public async Task<CommentDto> CreateCommentAsync(int postId, CommentCreateDto request)
     {
        var response = await _httpClient.PostAsJsonAsync($"api/posts/{postId}/comments", request);
        response.EnsureSuccessStatusCode();
-       return await response.Content.ReadFromJsonAsync<CommentDto>() ?? throw new Exception("Failed to create comment");
-       
+       var payload = await response.Content.ReadAsStringAsync();
+       if (!response.IsSuccessStatusCode) throw new Exception(payload);
+       return JsonSerializer.Deserialize<CommentDto>(payload, new JsonSerializerOptions
+           {PropertyNameCaseInsensitive = true})!;       
     }
 
     public async Task UpdateCommentAsync(int postId, int commentId, CommentUpdateDto request)
     {
         var response = await _httpClient.PutAsJsonAsync($"api/posts/{postId}/comments/{commentId}", request);
-        response.EnsureSuccessStatusCode();
+        var payload = await response.Content.ReadAsStringAsync();
+        if (!response.IsSuccessStatusCode) throw new Exception(payload);
     }
 
     public async Task DeleteCommentAsync(int postId, int commentId)
     {
         var response = await _httpClient.DeleteAsync($"api/posts/{postId}/comments/{commentId}");
-        response.EnsureSuccessStatusCode();
+        var payload = await response.Content.ReadAsStringAsync();
+        if (!response.IsSuccessStatusCode) throw new Exception(payload);
     }
 }
