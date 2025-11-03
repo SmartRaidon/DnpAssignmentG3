@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: dnp-webapi
+    env: docker
+    plan: free
+    repo: https://github.com/SmartRaidon/DnpAssignmentG3
+    rootDir: .
+    dockerfilePath: Server/WebApi/Dockerfile
+    autoDeploy: true
+    healthCheckPath: /swagger
+
+  - type: web
+    name: dnp-blazor
+    env: docker
+    plan: free
+    repo: https://github.com/SmartRaidon/DnpAssignmentG3
+    rootDir: .
+    dockerfilePath: BlazorApp/Dockerfile
+    autoDeploy: true
+    envVars:
+      - key: API_BASE_URL
+        fromService:
+          name: dnp-webapi
+          type: web
+          property: url
