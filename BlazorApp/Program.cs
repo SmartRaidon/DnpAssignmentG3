@@ -6,24 +6,17 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
-
 // Add HttpClient for API calls
 builder.Services.AddScoped(sp =>
 {
     var client = new HttpClient();
-    // Prefer environment variable, then appsettings, then localhost fallback
-    var apiBaseUrl = builder.Configuration["ApiBaseUrl"]
-                     ?? Environment.GetEnvironmentVariable("API_BASE_URL")
-                     ?? "http://localhost:5098";
-    client.BaseAddress = new Uri(apiBaseUrl);
+    client.BaseAddress = new Uri("http://localhost:5098"); // Update with your Web API URL
     client.DefaultRequestHeaders.Add("Accept", "application/json");
     return client;
 });
-
 builder.Services.AddScoped<IUserService, HttpUserService>();
 builder.Services.AddScoped<IPostService, HttpPostService>();
 builder.Services.AddScoped<ICommentService, HttpCommentService>();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
