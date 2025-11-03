@@ -1,0 +1,68 @@
+﻿@page "/posts/{PostId:int}/comments/edit/{CommentId:int}"
+@using ApiContracts.DTO.Comment
+@using BlazorApp.Services
+@inject ICommentService CommentService
+@inject NavigationManager Navigation
+<PageTitle>Comment Edit</PageTitle>
+<h3 class="text-primary text-center">Comment Edit</h3>
+
+<EditForm Model="@commentToCreate" OnValidSubmit="@CreateComment">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <label class="form-label text-primary"> User ID: </label>
+        <InputNumber @bind-Value="commentToCreate.UserId" class="form-control" />
+        <ValidationMessage For="@(() => commentToCreate.UserId)"/>
+    </div>
+    <div class="mb-3">
+        <label class="form-label text-primary"> Content: </label>
+        <InputTextArea @bind-Value="commentToCreate.Content" class="form-control" />
+        <ValidationMessage For="@( () => commentToCreate.Content)"/>
+    </div>
+    <div class="mb-3">
+        @if (commentToCreate.UserId >= 0 && commentToCreate.Content.Length>0)
+        {
+            <button type="submit" class="btn btn-primary">Create</button>
+        }
+        <button @onclick="GoBack" type="button" class="btn btn-danger" >Go Back</button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter] public int PostId { get; set; }
+    [Parameter] public int CommentId { get; set; }
+    private CommentCreateDto commentToCreate = new()
+    {
+        Content = string.Empty,
+        UserId = 0
+    };
+
+    private CommentDto? existingComment;
+    protected override async Task OnInitializedAsync()
+    {
+        existingComment = await CommentService.GetCommentByIdAsync(PostId, CommentId);
+        if (existingComment != null)
+        {
+            commentToCreate = new()
+            {
+                UserId = existingComment.UserId,
+                Content = existingComment.Content
+            };
+        }
+    }
+
+    private void GoBack()
+    {
+       Navigation.NavigateTo($"/posts/{PostId}/comments");
+    }
+
+    private async Task CreateComment()
+    {
+        var updateDto = new CommentUpdateDto()
+        {
+            Content = commentToCreate.Content
+        };
+        await CommentService.UpdateCommentAsync(PostId,CommentId, updateDto);
+        GoBack();
+    }
+
+}

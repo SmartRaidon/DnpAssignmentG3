@@ -1,5 +1,89 @@
-﻿<h3>PostEdit</h3>
+﻿@page "/posts/edit/{PostId:int}"
+@using ApiContracts.DTO.Post
+@using BlazorApp.Services
+@inject IPostService PostService
+@inject NavigationManager Navigation
+<h3 class="text-center text-primary">PostEdit</h3>
+
+<EditForm Model="@postToCreate" OnValidSubmit="CreatePost">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <label class="form-label text-primary">User ID:</label>
+        <InputNumber @bind-Value="postToCreate.UserId" class="form-control"/>
+        <ValidationMessage For="@(() => postToCreate.UserId)" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label text-primary">Title:</label>
+        <InputText @bind-Value="postToCreate.Title" class="form-control" />
+        <ValidationMessage For="@(() =>postToCreate.Title)" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label text-primary">Body:</label>
+        <InputText @bind-Value="postToCreate.Body" class="form-control" />
+        <ValidationMessage For="@(() => postToCreate.Body)" />
+    </div>
+    <div class="mb-3">
+        @if (postToCreate.UserId > 0)
+        {
+            <button type="submit" class="btn btn-primary">Edit Post</button> 
+        }
+       
+        <button type="button" class="btn btn-secondary" @onclick="GoBack">Go back</button>
+
+    </div>
+    
+</EditForm>
+
+@if (postToCreate.UserId <= 0)
+{
+    <div class="alert alert-danger"> USER ID MUST BE BIGGER THAN 0</div>
+}
 
 @code {
-    
+    [Parameter] public int PostId { get; set; }
+
+    private PostCreateDto postToCreate = new()
+    {
+        UserId = 0,
+        Title = string.Empty,
+        Body = string.Empty
+    };
+
+    private PostDto? existingPost;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (PostId > -1)
+        {
+            existingPost = await PostService.GetPostByIdAsync(PostId);
+            if (existingPost != null)
+            {
+                postToCreate = new()
+                {
+                    UserId = existingPost.UserId,
+                    Title = existingPost.Title,
+                    Body = existingPost.Body
+                };
+            }
+        }
+
+    }
+
+    private async Task CreatePost()
+    {
+        var updatePost = new PostUpdateDto()
+        {
+            Title = postToCreate.Title,
+            Body = postToCreate.Body
+        };
+        await PostService.UpdatePostAsync(PostId, updatePost);
+        GoBack();
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/posts");
+    }
+
 }
+

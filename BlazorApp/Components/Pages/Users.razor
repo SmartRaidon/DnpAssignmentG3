@@ -6,7 +6,7 @@
 
 <PageTitle>Users</PageTitle>
 
-<h3>Users in WEBAPI:</h3>
+<h3 class="text-center text-primary">Users in WEBAPI:</h3>
 
 <div class="mb-3">
     <input @bind="searchByUsername" 
@@ -14,7 +14,6 @@
     <button @onclick="SearchUsers" class="btn btn-primary mt-2">Search</button>
     <button @onclick="ClearUser" class ="btn btn-primary mt-2">Clear</button>
     </div>
-<button type="button" @onclick="NavigateToCreate"  class="btn btn-success mb-3">Create New User</button>
 
 @if (isLoading)
 {
@@ -22,7 +21,7 @@
 }
 else if (users == null || !users.Any())
 {
-    <p>No users found.</p>
+    <p class="text-primary">No users found.</p>
     <div class="alert alert-danger"> @allertToShow
     </div>
 }
@@ -60,7 +59,8 @@ else
         
     </table>
 }
-
+<button type="button" @onclick="NavigateToCreate"  class="btn btn-success btn-lg mb-3">Create New User</button>
+<button @onclick="HomePage" type="button" class="btn btn-primary btn-lg mb-3">HomePage</button>
 @code{
 
     private List<UserDto> users = new List<UserDto>();
@@ -138,6 +138,11 @@ else
     {
         searchByUsername=String.Empty;
         await LoadUsers();
+    }
+    
+    private void HomePage()
+    {
+        Navigation.NavigateTo("/");
     }
 
 }

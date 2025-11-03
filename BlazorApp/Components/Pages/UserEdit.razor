@@ -17,25 +17,33 @@ else if (existingUser == null)
 }
 else
 {
-    <h3>User EDIT:</h3>
+    <h3 class="text-center text-primary">User EDIT</h3>
 
     <EditForm Model="@updateDto" OnValidSubmit="UpdateUser">
         <DataAnnotationsValidator />
         <div class="mb-3">
-            <label class="form-label">Username: </label>
+            <label class="form-label text-primary">Username: </label>
             <InputText @bind-Value="updateDto.Username" placeholder="username" class="form-control" />
             <ValidationMessage For="@(() => updateDto.Username)" />
         </div>
         <div class="mb-3">
-            <small class="text-muted">Current password: @existingUser.Password</small>
+            <small class=" text-primary">Current password: @existingUser.Password</small>
             <br />
-            <small class="text-muted">(Password cannot be changed)</small>
+            <small class=" text-primary">(Password cannot be changed)</small>
         </div>
         <div class="mb-3">
-            <button type="submit" class="btn btn-primary">Update User!</button>
+            @if (updateDto.Username.Length>3)
+            {
+                <button type="submit" class="btn btn-primary">Update User!</button>
+            }
+            
             <button type="button" class="btn btn-secondary" @onclick="Back">Go back</button>
         </div>
     </EditForm>
+    @if (updateDto.Username.Length < 3)
+    {
+        <div class="alert alert-danger">Username must have at least 3 characters</div>
+    }
 
     @if (!string.IsNullOrEmpty(errorMessage))
     {
@@ -44,8 +52,7 @@ else
 }
 
 @code {
-    [Parameter]
-    public int UserId { get; set; }
+    [Parameter] public int UserId { get; set; }
 
     private UserDto? existingUser;
     private UserUpdateDto updateDto = new() { Username = string.Empty };
@@ -90,4 +97,5 @@ else
     {
         Navigation.NavigateTo("/users");
     }
+
 }

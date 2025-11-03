@@ -2,26 +2,24 @@
 @using ApiContracts.DTO.Post
 @using BlazorApp.Services
 @inject IPostService PostService
-@inject IUserService UserService
 @inject NavigationManager Navigation
 
 <PageTitle>Post Overview</PageTitle>
-<h3>Posts</h3>
+<h3 class="text-center text-primary">Posts</h3>
 
 
 <div class="mb-3">
     <input @bind="searchTitle" placeholder="Search  by title" class="form-control d-inline-block w-auto"/>
     <input @bind="filterUserId" type="number" placeholder="Filter by User ID" class="form-control d-inline-block w-auto"/>
     <button @onclick="SearchPost">Search</button>
-    <button @onclick="() => { searchTitle=string.Empty; filterUserId=null;}">Clear</button>
+    <button @onclick="Clear">Clear</button>
 </div>
-<button @onclick="NavigateToCreate" type="button" class="btn btn-success">Create new post</button>
 @if (isLoading)
 {
     <div class="spinner"></div>
 }else if (posts == null || !posts.Any() )
 {
-    <h1>Error loading posts :( list is empty</h1>
+    <div class="alert alert-danger">Error loading posts</div>
 }
 else
 {
@@ -41,10 +39,10 @@ else
                                 User ID: @post.UserId
                             </p>
                             <div>
-                                <button @onclick="() => ViewPost(post.Id)" type="button"  class="btn btn-sm btn-info">View</button>
-                                <button @onclick="() => EditPost(post.Id)" type="button"  class="btn btn-sm btn-primary">Edit</button>
-                                <button @onclick="() => DeletePost(post.Id)" type = "button" class="btn btn-sm btn-danger">Delete</button>
-                                <button @onclick="() => ViewComments(post.Id)" type="button"  class="btn btn-sm btn-secondary">Comments</button>
+                                <button @onclick="() => ViewPost(post.Id)" type="button"  class="btn  btn-info ">View</button>
+                                <button @onclick="() => EditPost(post.Id)" type="button"  class="btn  btn-primary ">Edit</button>
+                                <button @onclick="() => DeletePost(post.Id)" type = "button" class="btn  btn-danger ">Delete</button>
+                                <button @onclick="() => ViewComments(post.Id)" type="button"  class="btn  btn-secondary ">Comments</button>
                             </div>
                         </div>
                     </div>
@@ -53,6 +51,8 @@ else
         }
     </div>
 }
+<button @onclick="NavigateToCreate" type="button" class="btn btn-success btn-lg">Create new post</button>
+<button @onclick="HomePage" type="button" class="btn btn-primary btn-lg">HomePage</button>
 
 @code {
     private List<PostDto> posts = new();
@@ -126,6 +126,18 @@ else
     private void ViewComments(int postId)
     {
         Navigation.NavigateTo($"/posts/{postId}/comments");
+    }
+
+    private void HomePage()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+    private async Task Clear()
+    {
+        searchTitle=string.Empty; 
+        filterUserId=null;  
+        await LoadPosts();
     }
 
 }

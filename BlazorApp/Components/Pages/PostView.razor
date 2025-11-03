@@ -1,0 +1,70 @@
+﻿@page "/posts/{PostId:int}"
+@using ApiContracts.DTO.Post
+@using BlazorApp.Services
+@inject IPostService PostService
+@inject NavigationManager Navigation
+<h3 class="text-center text-primary">Post View</h3>
+
+@if (isLoading)
+{
+    <div class="spinner"></div>
+}else if (post is null)
+{
+    <p class="text-danger">Post not found.</p>
+    <button class="btn btn-danger" @onclick="GoBack">Back</button>
+}else
+{
+    <div class="card">
+        <div class ="card-body">
+            <h3>
+                Title:   @post.Title
+            </h3>
+            <p>
+                @post.Body
+            </p>
+            <p class="text-muted">
+                User ID: @post.UserId
+            </p>
+            <div>
+                <button @onclick="EditPost" class="btn btn-primary"  >Edit</button>
+                <button @onclick="ViewComments" class="btn btn-secondary">View Comments</button>
+                <button @onclick="GoBack" class="btn btn-danger" >Back</button>
+            </div>
+        </div>
+        
+    </div>
+}
+
+@code {
+    [Parameter] public int PostId { get; set; }
+    private PostDto? post;
+    private bool isLoading = true;
+    
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            post = await PostService.GetPostByIdAsync(PostId); 
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void EditPost()
+    {
+        Navigation.NavigateTo($"/posts/edit/{PostId}");
+    }
+    private void ViewComments()
+    {
+        Navigation.NavigateTo($"/posts/{PostId}/comments");
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/posts/");
+    }
+
+}

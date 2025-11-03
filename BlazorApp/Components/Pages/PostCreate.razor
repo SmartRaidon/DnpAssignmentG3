@@ -1,6 +1,77 @@
-﻿@page "posts/create"
-<h3>PostCreate</h3>
+﻿@page "/posts/create"
+@using ApiContracts.DTO.Post
+@using BlazorApp.Services
+@inject IPostService PostService
+@inject NavigationManager Navigation
+<h3 class="text-center text-primary">Create post</h3>
+
+<EditForm Model="@postToCreate" OnValidSubmit="CreatePost">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <label class="form-label text-primary">User ID:</label>
+        <InputNumber @bind-Value="postToCreate.UserId" class="form-control"/>
+        <ValidationMessage For="@(() => postToCreate.UserId)" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label text-primary">Title:</label>
+        <InputText @bind-Value="postToCreate.Title" class="form-control" />
+        <ValidationMessage For="@(() =>postToCreate.Title)" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label text-primary">Body:</label>
+        <InputText @bind-Value="postToCreate.Body" class="form-control" />
+        <ValidationMessage For="@(() => postToCreate.Body)" />
+    </div>
+    <div class="mb-3">
+        @if (postToCreate.UserId > 0 && postToCreate.Title.Length>0 && postToCreate.Body.Length >0)
+        {
+            <button type="submit" class="btn btn-primary">Create Post</button>
+        }
+     
+        <button type="button" class="btn btn-secondary" @onclick="GoBack">Go back</button>
+
+    </div>
+    
+</EditForm>
+
+@if (postToCreate.UserId <= 0)
+{
+    <div class="alert alert-danger">Id must be bigger than 0</div>
+}
+@if (postToCreate.Title.Length <= 0 || postToCreate.Body.Length<=0)
+{
+    <div class="alert alert-danger">POST TITLE OR BODY CANNOT BE EMPTY BRO</div>
+}
 
 @code {
+    private PostCreateDto postToCreate = new ()
+    {
+        UserId = 0, 
+        Title = string.Empty, 
+        Body = string.Empty
+    };
+    
+    private async Task CreatePost()
+    {
+        if (postToCreate.UserId<0)
+        {
+            return;
+        }
+        try
+        {
+            await PostService.CreatePostAsync(postToCreate);
+            GoBack();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error saving post: {e.Message}");
+
+        }
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/posts");
+    }
     
 }

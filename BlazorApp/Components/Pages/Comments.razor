@@ -1,0 +1,113 @@
+﻿@page "/posts/{PostId:int}/comments"
+@using ApiContracts.DTO.Comment
+@using ApiContracts.DTO.Post
+@using BlazorApp.Services
+@inject ICommentService CommentService
+@inject NavigationManager Navigation
+@inject IPostService PostService
+<PageTitle> Comments </PageTitle>
+<h3 class="text-center text-primary">Comments for post with id: @PostId</h3>
+
+@if (isLoading)
+{
+    <div class="spinner"></div>
+}else if (comments == null || !comments.Any())
+{
+    <h1 class="text-center">Post without comments</h1>
+}
+else
+{
+    <div class="mb-3">
+        <p class="text-center text-primary"><strong>Post:</strong> @post.Title</p>
+    </div>
+
+    
+    <div>
+        @foreach (var comment in comments)
+        {
+            <div class="card mb-2">
+                <div class="card-body">
+                    <p> @comment.Content</p>
+                    <p  class="text-muted"> User ID: @comment.UserId</p>
+                    <div>
+                        <button @onclick="()=>EditComment(comment.Id)" class="btn btn-primary" >Edit</button>
+                        <button @onclick="() => DeleteComment(comment.Id)" class="btn btn-danger">Delete</button>
+                    </div>
+                </div>
+
+            </div>
+        }
+    </div>
+}
+<button @onclick="CreateComment" class="btn btn-success mb-3 btn-lg">Add Comment</button>
+<button @onclick="HomePage" type="button" class="btn btn-primary btn-lg mb-3">HomePage</button>
+@code {
+    [Parameter] public int PostId { get; set; }
+    private PostDto? post;
+    private List<CommentDto>? comments = new ();
+    private bool isLoading = true;
+    private bool isFirstLoad = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        post = await PostService.GetPostByIdAsync(PostId);
+        await LoadComments();
+    }
+
+
+    private async Task LoadComments()
+    {
+        isLoading = true;
+        StateHasChanged();
+        try
+        {
+            if (isFirstLoad)
+            {
+                await Task.Delay(1500);
+                isFirstLoad = false;
+            }
+            var getComments = await CommentService.GetCommentsByPostAsync(PostId);
+            comments = getComments ?? new List<CommentDto>();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error loading comments: {e.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void EditComment(int commentId)
+    {
+        Navigation.NavigateTo($"/posts/{PostId}/comments/edit/{commentId}");
+
+    }
+
+    private async Task DeleteComment(int commentId)
+    {
+        try
+        {
+            await CommentService.DeleteCommentAsync(PostId,commentId);
+            await LoadComments();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+     
+    }
+
+    private void CreateComment()
+    {
+        Navigation.NavigateTo($"/posts/{PostId}/comments/create");
+    }
+
+    private void HomePage()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+}

@@ -1,0 +1,50 @@
+﻿@page "/posts/{PostId:int}/comments/create"
+@using ApiContracts.DTO.Comment
+@using BlazorApp.Services
+@inject ICommentService CommentService
+@inject NavigationManager Navigation
+<PageTitle>Create comment</PageTitle>
+<h3>Create comment for @PostId</h3>
+
+<EditForm Model="@commentToCreate" OnValidSubmit="@CreateComment">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <label class="form-label"> User ID: </label>
+        <InputNumber @bind-Value="commentToCreate.UserId" class="form-control" />
+        <ValidationMessage For="@(() => commentToCreate.UserId)"/>
+    </div>
+    <div class="mb-3">
+        <label class="form-label"> Content: </label>
+        <InputTextArea @bind-Value="commentToCreate.Content" class="form-control" />
+        <ValidationMessage For="@( () => commentToCreate.Content)"/>
+    </div>
+    <div class="mb-3">
+        @if (commentToCreate.UserId >= 0)
+        {
+            <button type="submit" class="btn btn-primary">Create</button>
+        }
+        <button @onclick="GoBack" type="button" class="btn btn-danger" >Go Back</button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter] public int PostId { get; set; }
+    private CommentCreateDto commentToCreate = new()
+    {
+        Content = String.Empty,
+        UserId = 0
+    };
+
+
+    private async Task CreateComment()
+    {
+        await CommentService.CreateCommentAsync(PostId, commentToCreate);
+        GoBack();
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo($"/posts/{PostId}/comments");
+    }
+
+}
