@@ -16,7 +16,7 @@ public class HttpPostService: IPostService
         var queryParameters = new List<String>();
         if(!string.IsNullOrWhiteSpace(title)) queryParameters.Add($"title={Uri.EscapeDataString(title)}");
         if (userId.HasValue) queryParameters.Add($"userId={userId.Value}");
-        var url = queryParameters.Any() ? $"{BaseUrl} ? {string.Join("&", queryParameters)}" : BaseUrl;
+        var url = queryParameters.Any() ? $"{BaseUrl}?{string.Join("&", queryParameters)}" : BaseUrl;
         Console.WriteLine(url);
         var response = await _httpClient.GetAsync(url);
         if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
