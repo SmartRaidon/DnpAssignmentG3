@@ -1,5 +1,7 @@
+using BlazorApp.Auth;
 using BlazorApp.Components;
 using BlazorApp.Services;
+using Microsoft.AspNetCore.Components.Authorization;
 
 // setting the developer environment manually
 var builder = WebApplication.CreateBuilder(new WebApplicationOptions
@@ -13,7 +15,10 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:5001") });
-builder.Services.AddScoped<HttpUserService>();
+builder.Services.AddScoped<IUserService, HttpUserService>();
+// post service + comment service are missing here
+builder.Services.AddScoped<AuthenticationStateProvider, SimpleAuthProvider>();
+
 
 var app = builder.Build();
 
