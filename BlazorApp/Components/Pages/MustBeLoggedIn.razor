@@ -45,7 +45,7 @@
 
         string? username = principal.Identity.Name;
         IEnumerable<Claim> claims = principal.Claims;
-        string userIdAsString = claims.Single(c => c.Type == "Id").Value;
+        string userIdAsString = claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value;
         int userId = int.Parse(userIdAsString);
 
     }

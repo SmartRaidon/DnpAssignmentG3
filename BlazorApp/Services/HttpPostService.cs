@@ -14,7 +14,7 @@ public class HttpPostService : IPostService
     
     public async Task<PostDto> AddPostAsync(PostDto request)
     {
-        HttpResponseMessage httpResponse = await _httpClient.PostAsJsonAsync("posts/add", request); // api/users maybe maybe
+        HttpResponseMessage httpResponse = await _httpClient.PostAsJsonAsync("posts", request); 
         string response = await httpResponse.Content.ReadAsStringAsync();
         if (!httpResponse.IsSuccessStatusCode)
         {

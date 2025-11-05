@@ -16,6 +16,8 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:5001") });
 builder.Services.AddScoped<IUserService, HttpUserService>();
+builder.Services.AddScoped<ICommentService, HttpCommentService>();
+builder.Services.AddScoped<IPostService, HttpPostService>();
 // post service + comment service are missing here
 builder.Services.AddScoped<AuthenticationStateProvider, SimpleAuthProvider>();
 

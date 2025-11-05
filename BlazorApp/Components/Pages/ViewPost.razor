@@ -1,0 +1,162 @@
+﻿@page "/posts/{PostId:int}"
+@using System.Security.Claims
+@using ApiContracts
+@using BlazorApp.Services
+
+@inject IPostService PostService
+@inject ICommentService CommentService
+@inject NavigationManager Navigation
+
+
+@if (_post == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    @if (!_isEditing)
+    {
+        <div>
+            <h4>@_post.Title</h4>
+            <p>@_post.Body</p>
+            <p><strong>Author:</strong> @_post.Author</p>
+
+            @if (_canEdit)
+            {
+                <button class="btn btn-primary" @onclick="EnableEditing">Edit</button>
+            }
+        </div>
+    }
+    else
+    {
+        <EditForm Model="_post" OnValidSubmit="HandleValidPostSubmit">
+            <InputText class="form-control mb-2" @bind-Value="_post.Title" placeholder="Title" />
+            <InputTextArea class="form-control mb-2" @bind-Value="_post.Body" placeholder="Body" />
+            <button class="btn btn-success" type="submit">Save</button>
+            <button class="btn btn-secondary ms-2" type="button" @onclick="CancelEditing">Cancel</button>
+        </EditForm>
+    }
+}
+
+<h3>--- Comment section ---</h3>
+
+@if (comments == null)
+{
+    <p><em>Loading comments...</em></p>
+}
+else if (!comments.Any())
+{
+    <p>There are no comments yet!</p>
+}
+else
+{
+    <div class="flex-column">
+        @foreach (var comment in comments)
+        {
+            <div class="col-md-6 mb-3">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">@comment.Username (#@comment.UserId) (Comment ID: @comment.Id)</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">@comment.Content</h6>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<AuthorizeView>
+    <Authorized Context="authContext">
+        <h3>--- Add comment ---</h3>
+        
+        <EditForm Model="_newComment" OnValidSubmit="HandleValidCommentSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            
+            <div class="mb-3">
+                <InputTextArea id="body" class="form-control" @bind-Value="_newComment.Content" rows="5" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Send</button>
+        </EditForm>
+        
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public int PostId { get; set; }
+    
+    [CascadingParameter]
+    public Task<AuthenticationState> State
+    {
+        get; set;
+    }
+    
+    private PostDto? _post;
+    private bool _isEditing = false;
+    private bool _canEdit = false;
+    private List<CommentDto> comments;
+    
+    CommentDto _newComment = new()
+    {
+        Id = -1,
+        PostId = -1,
+        Username = String.Empty,
+        UserId = -1,
+        Content = string.Empty
+    };
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _post = await PostService.GetPostAsync(PostId);
+        comments = await CommentService.GetCommentsByPostIdAsync(PostId);
+        
+        
+        AuthenticationState authenticationState = await State;
+        ClaimsPrincipal principal = authenticationState.User;
+        if (principal.Identity is null || !principal.Identity.IsAuthenticated)
+        {
+            // the user is not logged in
+            return;
+        }
+
+        string? username = principal.Identity.Name;
+        IEnumerable<Claim> claims = principal.Claims;
+        string userIdAsString = claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value;
+        int userId = int.Parse(userIdAsString);
+        _canEdit = userId == _post.UserId;
+        _newComment.Username = username;
+        _newComment.PostId = PostId;
+        _newComment.UserId = userId;
+    }
+    
+    private void EnableEditing() => _isEditing = true;
+    private void CancelEditing() => _isEditing = false;
+    
+    private async Task HandleValidPostSubmit()
+    {
+        if (_post != null && _canEdit)
+        {
+            await PostService.UpdatePostAsync(PostId, _post);
+            _isEditing = false;
+        }
+    }
+
+    private async Task HandleValidCommentSubmit()
+    {
+        if (_newComment != null)
+        {
+            await CommentService.AddCommentAsync(_newComment);
+            
+            // Refresh comments list
+            comments = await CommentService.GetCommentsByPostIdAsync(PostId);
+            
+            // clearing the inputfield omg
+            _newComment.Content = string.Empty;
+
+            // Force re-render
+            StateHasChanged();
+        }
+    }
+}

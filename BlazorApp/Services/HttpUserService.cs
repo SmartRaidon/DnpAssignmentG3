@@ -14,7 +14,7 @@ public class HttpUserService : IUserService
     
     public async Task<UserDto> AddUserAsync(CreateUserDto request)
     {
-        HttpResponseMessage httpResponse = await _httpClient.PostAsJsonAsync("users/register", request); // api/users maybe maybe
+        HttpResponseMessage httpResponse = await _httpClient.PostAsJsonAsync("users/register", request);
         string response = await httpResponse.Content.ReadAsStringAsync();
         if (!httpResponse.IsSuccessStatusCode)
         {

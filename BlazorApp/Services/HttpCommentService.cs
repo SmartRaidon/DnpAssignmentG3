@@ -42,7 +42,7 @@ public class HttpCommentService : ICommentService
 
     public async Task<List<CommentDto>> GetCommentsByPostIdAsync(int postId)
     {
-        HttpResponseMessage httpResponse = await _httpClient.GetAsync("comments/post/{postId}");
+        HttpResponseMessage httpResponse = await _httpClient.GetAsync($"comments/post/{postId}");
         string response = httpResponse.Content.ReadAsStringAsync().Result;
         if (!httpResponse.IsSuccessStatusCode)
         {

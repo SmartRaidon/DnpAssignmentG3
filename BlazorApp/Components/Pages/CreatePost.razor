@@ -1,0 +1,87 @@
+﻿@page "/CreatePost"
+@using System.Security.Claims
+@using ApiContracts
+@using BlazorApp.Services
+
+@inject IPostService PostService
+@inject NavigationManager Navigation
+
+@attribute [Authorize]
+
+<AuthorizeView>
+    <Authorized Context="authContext">
+        <h3>Let's create a new post!</h3>
+
+        <EditForm Model="_newPost" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <InputText id="title" class="form-control" @bind-Value="_newPost.Title" />
+            </div>
+
+            <div class="mb-3">
+                <label for="body" class="form-label">Body</label>
+                <InputTextArea id="body" class="form-control" @bind-Value="_newPost.Body" rows="5" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Create Post</button>
+        </EditForm>
+    </Authorized>
+    <NotAuthorized>
+        <p>ACCESS DENIED: You are not logged in.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private PostDto _newPost = new()
+    {
+        Id = -1,
+        Title = string.Empty,
+        Body = string.Empty,
+        UserId = -1,
+        Author = string.Empty
+    };
+    
+    [CascadingParameter]
+    public Task<AuthenticationState> State
+    {
+        get; set;
+    }
+     
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationState authenticationState = await State;
+        ClaimsPrincipal principal = authenticationState.User;
+        if (principal.Identity is null || !principal.Identity.IsAuthenticated)
+        {
+            // the user is not logged in
+            return;
+        }
+
+        string? username = principal.Identity.Name;
+        IEnumerable<Claim> claims = principal.Claims;
+        string userIdAsString = claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value;
+        int userId = int.Parse(userIdAsString);
+        Console.WriteLine($"userIdAsString: {userIdAsString}");
+        Console.WriteLine($"Parsed id: {userId}");
+        _newPost.Author = username;
+        _newPost.UserId = userId;
+
+    }
+    
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            var createdPost = await PostService.AddPostAsync(_newPost);
+            Console.WriteLine($"Post created with id {createdPost.Id}");
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error creating post: {ex.Message}");
+        }
+        Navigation.NavigateTo("/");
+    }
+}

@@ -26,6 +26,7 @@ public class PostsController : ControllerBase
             Id = post.Id,
             Body = post.Body,
             Title = post.Title,
+            Author = post.Author,
             UserId = post.UserId
         };
         return Ok(dto);
@@ -41,6 +42,7 @@ public class PostsController : ControllerBase
                 Id = p.Id,
                 Body = p.Body,
                 Title = p.Title,
+                Author = p.Author,
                 UserId = p.UserId
             }).ToList());
         return Ok(posts);
@@ -50,10 +52,12 @@ public class PostsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<PostDto>> CreatePostAsync([FromBody] PostDto request)
     {
+        Console.WriteLine($"Received PostDto: Title={request.Title}, Body={request.Body}, UserId={request.UserId}, Author={request.Author}");
         Post post = new()
         {
             Body = request.Body,
             Title = request.Title,
+            Author = request.Author,
             UserId = request.UserId
         };
         
@@ -77,6 +81,7 @@ public class PostsController : ControllerBase
             Id = post.Id, // maybe not needed for editing
             Title = post.Title,
             Body = post.Body,
+            Author = post.Author, // maybe not needed for editing
             UserId = post.UserId // maybe not needed for editing
         };
         return Ok(new
