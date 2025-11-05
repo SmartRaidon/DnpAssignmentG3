@@ -24,7 +24,7 @@ public class UsersController : ControllerBase
         UserDto dto = new()
         {
             Id = user.Id,
-            UserName = user.Username
+            Username = user.Username
         };
         return Ok(dto);
     }
@@ -37,7 +37,7 @@ public class UsersController : ControllerBase
             .Select(u => new UserDto
         {
             Id = u.Id,
-            UserName = u.Username
+            Username = u.Username
         }).ToList());
         return Ok(users);
     }
@@ -55,7 +55,7 @@ public class UsersController : ControllerBase
         var response = new UserDto
         {
             Id = user.Id,
-            UserName = user.Username
+            Username = user.Username
         };
         return Ok(new
         {

@@ -3,5 +3,5 @@
 public class UserDto
 {
     public required int Id { get; set; }
-    public required string UserName { get; set; } = string.Empty;
+    public required string Username { get; set; } = string.Empty;
 }

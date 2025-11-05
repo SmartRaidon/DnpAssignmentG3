@@ -1,7 +1,7 @@
 ﻿@page "/test"
 @using ApiContracts
 @using BlazorApp.Services
-@inject HttpUserService UserService
+@inject IUserService UserService
 
 <PageTitle>Test page for API testing</PageTitle>
 
@@ -34,7 +34,7 @@
         <ul>
             @foreach (var user in _users)
             {
-                <li>@user.Id - @user.UserName</li>
+                <li>@user.Id - @user.Username</li>
             }
         </ul>
     }
@@ -90,7 +90,7 @@
         try
         {
             _user = await UserService.GetUserAsync(userId);
-            _responseString = _user.UserName;
+            _responseString = _user.Username;
         }
         catch (Exception ex)
         {

@@ -31,7 +31,7 @@ public class AuthController : ControllerBase
             UserDto dto = new() // create DTO
             {
                 Id = created.Id,
-                UserName = created.Username
+                Username = created.Username
             };
             return Created($"/users/{dto.Id}", dto); // return created userDTO
         }
@@ -45,10 +45,15 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public IActionResult Login([FromBody] CreateUserDto request)
     {
-        var foundUser = _userRepository.GetMany().Any(u => u.Username == request.Username && u.Password == request.Password);
-        if (foundUser)
+        var foundUser = _userRepository.GetMany().FirstOrDefault(u => u.Username == request.Username && u.Password == request.Password);
+        if (foundUser != null)
         {
-            return Ok(new { message = "Login successful!" }); // rewrite it to be usable, for now it's just a placeholder
+            var userDto = new UserDto
+            {
+                Id = foundUser.Id,
+                Username = foundUser.Username
+            };
+            return Ok(userDto);
         }
         else
         {

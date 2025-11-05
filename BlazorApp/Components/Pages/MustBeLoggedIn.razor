@@ -1,0 +1,53 @@
+﻿@page "/MustBeLoggedIn"
+@using System.Security.Claims
+@attribute [Authorize]
+<h3>Must Be Logged In To View OMG</h3>
+<p>You can only access this page if you are logged in!</p>
+
+<AuthorizeView>
+    <Authorized>
+        <h3>Hello @context.User.Identity.Name</h3>
+        <p>@context.User.Claims.First(claim => claim.Type.Equals(ClaimTypes.Role)).Value</p>
+        <p>Your claims include:</p>
+        <ol>
+            @foreach (Claim claim in context.User.Claims)
+            {
+                <li>
+                    <label>@claim.Type: @claim.Value</label>
+                </li>
+            }
+        </ol>
+            
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not logged in.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+
+    [CascadingParameter]
+    public Task<AuthenticationState> State
+    {
+        get; set;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationState authenticationState = await State;
+        ClaimsPrincipal principal = authenticationState.User;
+        if (principal.Identity is null || !principal.Identity.IsAuthenticated)
+        {
+            // the user is not logged in
+            return;
+        }
+
+        string? username = principal.Identity.Name;
+        IEnumerable<Claim> claims = principal.Claims;
+        string userIdAsString = claims.Single(c => c.Type == "Id").Value;
+        int userId = int.Parse(userIdAsString);
+
+    }
+
+}
