@@ -6,8 +6,6 @@
 @inject IPostService PostService
 @inject NavigationManager Navigation
 
-@attribute [Authorize]
-
 <AuthorizeView>
     <Authorized Context="authContext">
         <h3>Let's create a new post!</h3>
