@@ -1,0 +1,149 @@
+﻿@page "/posts"
+@using ApiContracts
+@using BlazorApp.Services
+@inject IPostService _postService
+@inject IUserService _userService
+@inject ICommentService _commentService
+
+<PageTitle>Posts</PageTitle>
+
+<div>
+    <div class="adding-new-post">
+        <h1>Add new post</h1>
+        <input placeholder="user Id" @bind="_newUserId" />
+        <input placeholder="title" @bind="_newTitle" />
+        <input placeholder="body" @bind="_newBody" />
+        <button @onclick="AddNewPost">Add post</button>
+    </div>
+    
+    <hr/>
+    <div class="listing-posts">
+        <h1>List of posts</h1>
+        <ul>
+            @foreach (var post in posts)
+            {
+                <li>
+                    <button @onclick="() => SelectPost(post)">
+                        <strong>Post title:</strong> @post.Title, 
+                        <strong>Author:</strong> @GetAuthorName(post.UserId)
+                    </button>
+                </li>
+            }
+        </ul>
+        
+    </div>
+
+    <hr/>
+    <!-- Show post details -->
+    @if (selectedPost is not null)
+    {
+        <div class="post-details">
+            <h2>Post details</h2>
+            <strong>Title:</strong> @selectedPost.Title,  <strong>Body: </strong> @selectedPost.Body,  <strong>Author:</strong> @GetAuthorName(selectedPost.UserId)
+            <hr/>
+            <h4>Comments</h4>
+            @if (!SelectedPostComments.Any())
+            {
+                <p>No comments yet.</p>
+            }
+            else
+            {
+                <ul>
+                    @foreach (var c in SelectedPostComments)
+                    {
+                        <li>
+                            <strong>Author: @GetAuthorName(c.UserId)</strong> > has commented: @c.Body
+                        </li>
+                    }
+                </ul>
+            }
+            <hr/>
+            <h4>Add comment to this post</h4>
+            <input placeholder="user id" @bind="_commentUserId" />
+            <input placeholder="body" @bind="_commentBody" />
+            <button @onclick="AddCommentToSelectedPost">Add comment</button>
+        </div>
+    }
+</div>
+
+@code {
+    private List<PostDTO> posts = new();
+    private List<UserDTO> users = new();
+    private List<CommentDTO> comments = new();
+
+    private PostDTO? selectedPost;
+
+    // add post
+    private int _newUserId;
+    private string? _newTitle;
+    private string? _newBody;
+
+    // add comment
+    private int _commentUserId;
+    private string? _commentBody;
+
+    protected override async Task OnInitializedAsync()
+    {
+        posts = await _postService.GetMany();
+        users = await _userService.GetMany();
+        comments = await _commentService.GetMany();
+    }
+
+    private async Task AddNewPost()
+    {
+        var createPostDto = new CreatePostDTO
+        {
+            UserId = _newUserId,
+            Title  = _newTitle,
+            Body   = _newBody
+        };
+
+        var newPost = await _postService.AddPost(createPostDto);
+        posts.Add(newPost);
+
+        // clear inputs
+        _newUserId = 0;
+        _newTitle = string.Empty;
+        _newBody = string.Empty;
+    }
+
+    private void SelectPost(PostDTO post)
+    {
+        selectedPost = post;
+    }
+
+    // comments for currently selected post
+    private IEnumerable<CommentDTO> SelectedPostComments =>
+        selectedPost is null
+            ? Enumerable.Empty<CommentDTO>()
+            : comments.Where(c => c.PostId == selectedPost.Id);
+
+    private string GetAuthorName(int userId)
+    {
+        var user = users.FirstOrDefault(u => u.Id == userId);
+
+        if (user is null)
+        {
+            return "Unknown author"; // or return string.Empty;
+        }
+        return user.Username;
+    }
+
+    private async Task AddCommentToSelectedPost()
+    {
+        CreateCommentDTO createCommentDto = new CreateCommentDTO
+        {
+            UserId = _commentUserId,
+            PostId = selectedPost.Id,
+            Body   = _commentBody
+        };
+
+        var newComment = await _commentService.AddComment(createCommentDto);
+
+        // add to local list so UI updates
+        comments.Add(newComment);
+
+        _commentUserId = 0;
+        _commentBody = string.Empty;
+    }
+}

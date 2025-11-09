@@ -27,6 +27,16 @@ public class CommentsController : ControllerBase
         return Ok(commentDtos);
     }
 
+    [HttpGet("/by-post/{postId}")]
+    public async Task<ActionResult<CommentDTO>> GetManyByPostId([FromRoute] int postId)
+    {
+        IQueryable<Comment> comments = await _commentRepository.GetManyByPostId(postId);
+
+        List<CommentDTO> commentDtos = MapCommentsToDto(comments);
+        
+        return Ok(commentDtos);
+    }
+    
     // GET by Id action
     [HttpGet("{id}")]
     public async Task<ActionResult<CommentDTO>> GetSingle([FromRoute] int id)
@@ -34,6 +44,7 @@ public class CommentsController : ControllerBase
         Comment comment = await _commentRepository.GetSingleAsync(id);
 
         CommentDTO commentDto = MapCommentToDto(comment);
+        
         
         return Ok(commentDto);
     }

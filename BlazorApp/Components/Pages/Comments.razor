@@ -1,0 +1,69 @@
+@page "/Comments"
+@using ApiContracts
+@using BlazorApp.Services
+@inject ICommentService _CommentService
+
+<PageTitle>Comments</PageTitle>
+
+<div>
+    <div class="adding-new-comment">
+        <h1>Add new comment</h1>
+        <input placeholder="user id" @bind="_newUserId"/>
+        <input placeholder="post id" @bind="_newPostId"/>
+        <input placeholder="body" @bind="_newBody"/>
+        <button @onclick="AddNewComment"> Add Comment</button>
+    </div>
+    <hr/>
+    <div class="listing-comments">
+        <h1>List of comments</h1>
+        <ul>
+            
+            @foreach (var comment in comments)
+            {
+                <li>
+                    <strong>Comment id: </strong>@comment.Id, 
+                    <strong>User id: </strong>@comment.UserId, 
+                    <strong>Post id:</strong> @comment.PostId,
+                    <strong>Body:</strong>  @comment.Body
+                </li>
+            }
+        </ul>
+        
+    </div>
+</div>
+@code {
+    
+    // for displaying Comments
+    private List<CommentDTO> comments = new List<CommentDTO>();
+    
+    // for adding Comments
+    private int _newUserId;
+    private int _newPostId;
+    private string? _newBody;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        comments = await _CommentService.GetMany();
+    }
+
+    public async Task AddNewComment()
+    {
+        CreateCommentDTO createCommentDto = new CreateCommentDTO()
+        {
+            UserId = _newUserId,
+            PostId = _newPostId,
+            Body = _newBody
+        };
+        // adding new Comment through HTTP
+        var newComment = await _CommentService.AddComment(createCommentDto);
+        
+        // adding Comment to the local list
+        comments.Add(newComment);
+        
+        // clear input fields
+        _newUserId = 0;
+        _newPostId = 0;
+        _newBody = String.Empty;
+    }
+
+}

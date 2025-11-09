@@ -108,6 +108,16 @@ public class CommentFileRepository : ICommentRepository
 
         return await Task.FromResult(comments.AsQueryable());
     }
+    
+    public async Task<IQueryable<Comment>> GetManyByPostId(int postId)
+    {
+        IQueryable<Comment> comments = await GetManyAsync();
+
+        var commentsByPost = comments.Where(comment => comment.PostId == postId);
+
+        return commentsByPost;
+    }
+
 
     private async void InitializeFileIfNotExists()
     {

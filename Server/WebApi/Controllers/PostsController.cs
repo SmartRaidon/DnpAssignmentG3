@@ -21,8 +21,10 @@ public class PostsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<PostDTO>>> GetMany()
     {
+        //queryable list of post entities
+        //gets all posts from repository
         IQueryable<Post> posts = await _postRepository.GetManyAsync();
-
+        //converts them into DTO
         List<PostDTO> postDtos = MapPostsToDto(posts);
 
         return Ok(postDtos);
