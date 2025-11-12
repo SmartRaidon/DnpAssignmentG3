@@ -54,9 +54,9 @@ public class SimpleAuthProvider : AuthenticationStateProvider
     }
     
     //method called by Blazor framework to access current auth state
-    public override Task<AuthenticationState> GetAuthenticationStateAsync()
+    public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        return Task.FromResult(new AuthenticationState(currentClaimsPrincipal ?? new()));
+        return new AuthenticationState(currentClaimsPrincipal ?? new());
         // '??' checks id currentClaimsPrincipal is null, and if so returns prt after the ??
     }
 }
