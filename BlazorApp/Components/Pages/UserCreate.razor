@@ -16,41 +16,55 @@
     </div>
     <div class="mb-3">
         <label class="form-label text-primary">Password: </label>
-        <InputText type="password" @bind-Value="user.Password"   placeholder="password" class="form-control" />
+        <InputText type="password" @bind-Value="user.Password"   placeholder="password (required)" class="form-control" />
         <ValidationMessage For="@(() => user.Password)" />
     </div>
     <div class="mb-3">
-        @if (user.Username.Length > 3 && user.Password.Length > 1)
+        @if (IsFormValid)
         {
             <button type="submit" class="btn btn-primary">Create User!</button>
         }
         <button type="button" class="btn btn-secondary" @onclick="Back">Go back</button>
     </div>
 </EditForm>
-@if (user.Username.Length < 3)
+
+@if (!IsFormValid)
 {
-    <div class="alert alert-danger"> Username must be longer than 3 characters: @user.Username.Length</div>
-}else if (user.Password.Length < 1)
-{
-    <div  class="alert alert-danger">Password must be longer than 1 character: @user.Password.Length </div>
+    <div class="alert alert-warning">
+        @if (user.Username.Trim().Length < 3)
+        {
+            <p>Username must be at least 3 characters</p>
+        }
+        @if (string.IsNullOrWhiteSpace(user.Password))
+        {
+            <p>Password is required</p>
+        }
+        else if (user.Password.Length < 2)
+        {
+            <p>Password must be at least 2 characters</p>
+        }
+    </div>
 }
-
-
-
 
 @code {
     private UserCreateDto user = new() { Username = string.Empty, Password = string.Empty };
-   
-
     
+    private bool IsFormValid => 
+        user.Username.Trim().Length >= 3 && 
+        !string.IsNullOrWhiteSpace(user.Password) && 
+        user.Password.Length >= 2;
     
     private async Task CreateUser()
     {
+        if (!IsFormValid)
+        {
+            return;
+        }
+        
         try
         {
-            
             await UserService.AddUserAsync(user);
-            Navigation.NavigateTo("/users");
+            Navigation.NavigateTo("/login");
         }
         catch (Exception ex)
         {
@@ -60,6 +74,6 @@
 
     private void Back()
     {
-        Navigation.NavigateTo("/users");
+        Navigation.NavigateTo("/");
     }
 }

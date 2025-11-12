@@ -1,4 +1,5 @@
 ﻿@page "/posts"
+@using System.Security.Claims
 @using ApiContracts.DTO.Post
 @using BlazorApp.Services
 @inject IPostService PostService
@@ -40,8 +41,11 @@ else
                             </p>
                             <div>
                                 <button @onclick="() => ViewPost(post.Id)" type="button"  class="btn  btn-info ">View</button>
-                                <button @onclick="() => EditPost(post.Id)" type="button"  class="btn  btn-primary ">Edit</button>
-                                <button @onclick="() => DeletePost(post.Id)" type = "button" class="btn  btn-danger ">Delete</button>
+                                @if (currentloggedUserId.HasValue && post.UserId == currentloggedUserId.Value)
+                                {
+                                    <button @onclick="() => EditPost(post.Id)" type="button"  class="btn  btn-primary ">Edit</button>
+                                    <button @onclick="() => DeletePost(post.Id)" type = "button" class="btn  btn-danger ">Delete</button>
+                                }
                                 <button @onclick="() => ViewComments(post.Id)" type="button"  class="btn  btn-secondary ">Comments</button>
                             </div>
                         </div>
@@ -55,15 +59,41 @@ else
 <button @onclick="HomePage" type="button" class="btn btn-primary btn-lg">HomePage</button>
 
 @code {
+    [CascadingParameter] public Task<AuthenticationState>? State { get; set; }
     private List<PostDto> posts = new();
     private bool isLoading = true;
     private bool isFirstLoad = true;
     private string searchTitle = string.Empty;
     private int? filterUserId;
-
+    private int? currentloggedUserId;
     protected override async Task OnInitializedAsync()
     {
+        await GetLoggedUserId();
         await LoadPosts();
+    }
+
+    private async Task GetLoggedUserId()
+    {
+        if (State !=null)
+        {
+            AuthenticationState authState = await State;
+            ClaimsPrincipal claimsPrincipal = authState.User;
+            if (claimsPrincipal.Identity is null || !claimsPrincipal.Identity.IsAuthenticated )
+            {
+                // the user is not logged in
+                return;
+            }
+
+            if ( claimsPrincipal!=null)
+            {
+                string? userName = claimsPrincipal.Identity?.Name;
+                IEnumerable<Claim> claims = claimsPrincipal.Claims;
+                string userIdAsString = claims.Single(c => c.Type == "Id").Value;
+                currentloggedUserId = int.Parse(userIdAsString);  
+            }
+           
+
+        }
     }
     private async Task LoadPosts()
     {

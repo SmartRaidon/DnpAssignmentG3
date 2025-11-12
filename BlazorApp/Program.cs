@@ -1,5 +1,7 @@
+using BlazorApp.Auth;
 using BlazorApp.Components;
 using BlazorApp.Services;
+using Microsoft.AspNetCore.Components.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +9,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 // Add HttpClient for API calls
+builder.Services.AddAuthentication("Cookies") // or any scheme you want
+    .AddCookie("Cookies", options =>
+    {
+        options.LoginPath = "/login";
+    });
+builder.Services.AddAuthorization();
 builder.Services.AddScoped(sp =>
 {
     var client = new HttpClient();
@@ -17,6 +25,7 @@ builder.Services.AddScoped(sp =>
 builder.Services.AddScoped<IUserService, HttpUserService>();
 builder.Services.AddScoped<IPostService, HttpPostService>();
 builder.Services.AddScoped<ICommentService, HttpCommentService>();
+builder.Services.AddScoped<AuthenticationStateProvider,SimpleAuthProvider>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

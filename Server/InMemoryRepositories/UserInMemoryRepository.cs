@@ -47,6 +47,11 @@ public class UserInMemoryRepository : IUserRepository
         return Task.FromResult(userToRetrieve);
     }
 
+    public Task<User> GetSingelAsyncByUsername(string username)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task<User> GetByUsernameAsync(string username)
     {
         User? userToRetrieve = users.SingleOrDefault(p => p.Username == username);

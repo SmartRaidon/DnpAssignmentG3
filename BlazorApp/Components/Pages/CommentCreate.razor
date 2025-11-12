@@ -1,33 +1,44 @@
 ﻿@page "/posts/{PostId:int}/comments/create"
+@attribute [Authorize]
+@using System.Security.Claims
 @using ApiContracts.DTO.Comment
 @using BlazorApp.Services
 @inject ICommentService CommentService
 @inject NavigationManager Navigation
 <PageTitle>Create comment</PageTitle>
 <h3 class="text-center text-primary">Create comment for @PostId</h3>
+@if (!currentloggedinUserId.HasValue)
+{
+    <div class="alert alert-warning">Unable to identify user. Please log in again.</div>
+    <button @onclick="GoBack" type="button" class="btn btn-danger">Go Back</button>
+}
+else
+{
+    <EditForm Model="@commentToCreate" OnValidSubmit="@CreateComment">
+        <DataAnnotationsValidator />
+        <div class="mb-3">
+            <label class="form-label text-primary"> User ID: </label>
+            <InputNumber @bind-Value="commentToCreate.UserId" class="form-control" />
+            <ValidationMessage For="@(() => commentToCreate.UserId)"/>
+        </div>
+        <div class="mb-3">
+            <label class="form-label text-primary"> Content: </label>
+            <InputTextArea @bind-Value="commentToCreate.Content" class="form-control" />
+            <ValidationMessage For="@( () => commentToCreate.Content)"/>
+        </div>
+        <div class="mb-3">
+            @if (commentToCreate.UserId > 0 && commentToCreate.Content.Length >0)
+            {
+                <button type="submit" class="btn btn-primary">Create</button>
+            }
+            <button @onclick="GoBack" type="button" class="btn btn-danger" >Go Back</button>
+        </div>
+    </EditForm> 
+}
 
-<EditForm Model="@commentToCreate" OnValidSubmit="@CreateComment">
-    <DataAnnotationsValidator />
-    <div class="mb-3">
-        <label class="form-label text-primary"> User ID: </label>
-        <InputNumber @bind-Value="commentToCreate.UserId" class="form-control" />
-        <ValidationMessage For="@(() => commentToCreate.UserId)"/>
-    </div>
-    <div class="mb-3">
-        <label class="form-label text-primary"> Content: </label>
-        <InputTextArea @bind-Value="commentToCreate.Content" class="form-control" />
-        <ValidationMessage For="@( () => commentToCreate.Content)"/>
-    </div>
-    <div class="mb-3">
-        @if (commentToCreate.UserId > 0 && commentToCreate.Content.Length >0)
-        {
-            <button type="submit" class="btn btn-primary">Create</button>
-        }
-        <button @onclick="GoBack" type="button" class="btn btn-danger" >Go Back</button>
-    </div>
-</EditForm>
 
 @code {
+    [CascadingParameter] public Task<AuthenticationState>? State { get; set; }
     [Parameter] public int PostId { get; set; }
     private CommentCreateDto commentToCreate = new()
     {
@@ -35,9 +46,45 @@
         UserId = 0
     };
 
+    private int? currentloggedinUserId;
+
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await GetUserId();
+        if (currentloggedinUserId.HasValue)
+        {
+            commentToCreate.UserId = currentloggedinUserId.Value;
+        }
+    }
+
+    private async Task GetUserId()
+    {
+        if (State != null)
+        {
+            AuthenticationState authenticationState = await State;
+            ClaimsPrincipal claimsPrincipal = authenticationState.User;
+            if(claimsPrincipal.Identity is null || !claimsPrincipal.Identity.IsAuthenticated)
+            {
+                // the user is not logged in
+                return;
+            }
+            string? userName = claimsPrincipal.Identity?.Name;
+            IEnumerable<Claim> claims = claimsPrincipal.Claims;
+            string userIdAsString = claims.Single(c => c.Type == "Id").Value;
+            currentloggedinUserId = int.Parse(userIdAsString);
+
+        }
+    }
 
     private async Task CreateComment()
     {
+        if (!currentloggedinUserId.HasValue)
+        {
+            return;
+        }
+
+        commentToCreate.UserId = currentloggedinUserId.Value;
         await CommentService.CreateCommentAsync(PostId, commentToCreate);
         GoBack();
     }

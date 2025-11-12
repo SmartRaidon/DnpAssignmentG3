@@ -1,47 +1,61 @@
 ﻿@page "/posts/edit/{PostId:int}"
+@using System.Security.Claims
 @using ApiContracts.DTO.Post
 @using BlazorApp.Services
 @inject IPostService PostService
 @inject NavigationManager Navigation
 <h3 class="text-center text-primary">PostEdit</h3>
-
-<EditForm Model="@postToCreate" OnValidSubmit="CreatePost">
-    <DataAnnotationsValidator />
-    <div class="mb-3">
-        <label class="form-label text-primary">User ID:</label>
-        <InputNumber @bind-Value="postToCreate.UserId" class="form-control"/>
-        <ValidationMessage For="@(() => postToCreate.UserId)" />
-    </div>
-    <div class="mb-3">
-        <label class="form-label text-primary">Title:</label>
-        <InputText @bind-Value="postToCreate.Title" class="form-control" />
-        <ValidationMessage For="@(() =>postToCreate.Title)" />
-    </div>
-    <div class="mb-3">
-        <label class="form-label text-primary">Body:</label>
-        <InputText @bind-Value="postToCreate.Body" class="form-control" />
-        <ValidationMessage For="@(() => postToCreate.Body)" />
-    </div>
-    <div class="mb-3">
-        @if (postToCreate.UserId > 0)
-        {
-            <button type="submit" class="btn btn-primary">Edit Post</button> 
-        }
-       
-        <button type="button" class="btn btn-secondary" @onclick="GoBack">Go back</button>
-
-    </div>
-    
-</EditForm>
-
-@if (postToCreate.UserId <= 0)
+@if (!canEdit)
 {
-    <div class="alert alert-danger"> USER ID MUST BE BIGGER THAN 0</div>
+    <div class="alert alert-danger">
+        This is not your post, so you cannot edit it.
+    </div>
+    <p class="text-primary">You are trying to edit post with id: @existingPost?.Id</p>
+    <p class="text-primary">But you are user with id: @currentLoggedInUserId</p>
+    <button class="btn btn-secondary" @onclick="GoBack">Go back</button>
+}else if (existingPost == null)
+{
+    <h3>Post not found</h3>
+    <button class="btn btn-secondary" @onclick="GoBack">Go back</button>
 }
+else
+{
+    <EditForm Model="@postToCreate" OnValidSubmit="CreatePost">
+        <DataAnnotationsValidator />
+        <div class="mb-3">
+            <label class="form-label text-primary">User ID:</label>
+            <InputNumber @bind-Value="postToCreate.UserId" class="form-control"/>
+            <ValidationMessage For="@(() => postToCreate.UserId)" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label text-primary">Title:</label>
+            <InputText @bind-Value="postToCreate.Title" class="form-control" />
+            <ValidationMessage For="@(() =>postToCreate.Title)" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label text-primary">Body:</label>
+            <InputText @bind-Value="postToCreate.Body" class="form-control" />
+            <ValidationMessage For="@(() => postToCreate.Body)" />
+        </div>
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger">@errorMessage</div>
+        }
+
+        <div class="mb-3">
+            <button disabled="@(!IsFormValid)" type="submit" class="btn btn-primary">Update</button>
+            <button type="button" class="btn btn-secondary" @onclick="GoBack">Go back</button>
+        </div>
+    
+    </EditForm>
+}
+
+
+
 
 @code {
     [Parameter] public int PostId { get; set; }
-
+    [CascadingParameter] public Task<AuthenticationState>? State { get; set; }
     private PostCreateDto postToCreate = new()
     {
         UserId = 0,
@@ -50,13 +64,37 @@
     };
 
     private PostDto? existingPost;
-
+    private string errorMessage = string.Empty;
+    private bool canEdit;
+    private int? currentLoggedInUserId;
+    private bool IsFormValid => postToCreate != null && 
+                                postToCreate.Title.Trim().Length > 0 && 
+                                postToCreate.Body.Trim().Length > 0;
     protected override async Task OnInitializedAsync()
     {
+        if (State == null)
+        {
+            errorMessage = "Authentication state not available.";
+            return;
+        }
+
+        AuthenticationState authState = await State;
+        ClaimsPrincipal? claimsPrincipal = authState?.User;
+        if (claimsPrincipal == null)
+        {
+            errorMessage = "User not authenticated.";
+            return;
+        }
+        string? userName = claimsPrincipal.Identity?.Name;
+        IEnumerable<Claim> claims = claimsPrincipal.Claims;
+        string userIdAsString = claims.Single(c => c.Type == "Id").Value;
+        currentLoggedInUserId = int.Parse(userIdAsString);
+        
         if (PostId > -1)
         {
             existingPost = await PostService.GetPostByIdAsync(PostId);
-            if (existingPost != null)
+            canEdit = existingPost != null && currentLoggedInUserId.HasValue && existingPost.UserId == currentLoggedInUserId.Value;
+            if (existingPost != null && canEdit)
             {
                 postToCreate = new()
                 {
@@ -65,12 +103,18 @@
                     Body = existingPost.Body
                 };
             }
+            else postToCreate = null;
         }
 
     }
 
     private async Task CreatePost()
     {
+        if (!canEdit || postToCreate==null)
+        {
+            return;
+        }
+        errorMessage = string.Empty;
         var updatePost = new PostUpdateDto()
         {
             Title = postToCreate.Title,

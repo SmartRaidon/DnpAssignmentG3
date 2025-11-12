@@ -75,16 +75,22 @@ public class UserFileRepository: IUserRepository
         return userToRetrieve;
     }
 
-    public async Task<User> GetByUsernameAsync(string username)
+    public async Task<User> GetSingelAsyncByUsername(string username)
     {
         var users = await ReadFromJson();
-        User? userToRetrieve = users.SingleOrDefault(p => p.Username == username);
-        if (userToRetrieve is null)
+        var matches = users.Where(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase)).ToList();
+
+        if (matches.Count == 0)
         {
             throw new InvalidOperationException($"User with username '{username}' not found");
         }
 
-        return userToRetrieve;
+        if (matches.Count > 1)
+        {
+            throw new InvalidOperationException($"Multiple users share the username '{username}'.");
+        }
+
+        return matches[0];
     }
     public IQueryable<User> GetMany()
     {

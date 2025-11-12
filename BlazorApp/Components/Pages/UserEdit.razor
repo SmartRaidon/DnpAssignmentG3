@@ -1,4 +1,6 @@
 ﻿@page "/users/edit/{UserId:int}"
+@attribute [Authorize]
+@using System.Security.Claims
 @using ApiContracts.DTO.User
 @using BlazorApp.Services
 @inject IUserService UserService
@@ -10,68 +12,120 @@
 {
     <p>Loading user...</p>
 }
+else if (!canEdit)
+{
+    <div class="alert alert-danger">
+        This is not the account you are currently logged in with, so you cannot edit its credentials.
+    </div>
+    <p  class="text-primary"> you are trying to edit user with id: @existingUser.Id</p>
+    <p class="text-primary">but you are user with id: @currentloggedinuser </p>
+    <button class="btn btn-secondary" @onclick="Back">Go back</button>
+}
 else if (existingUser == null)
 {
     <h3>User not found</h3>
     <button class="btn btn-secondary" @onclick="Back">Go back</button>
 }
+else if (updateDto == null)
+{
+    <p>Initializing form...</p>
+}
 else
 {
-    <h3 class="text-center text-primary">User EDIT</h3>
+    <h3 class="text-center text-primary">Edit your account</h3>
 
     <EditForm Model="@updateDto" OnValidSubmit="UpdateUser">
         <DataAnnotationsValidator />
         <div class="mb-3">
-            <label class="form-label text-primary">Username: </label>
-            <InputText @bind-Value="updateDto.Username" placeholder="username" class="form-control" />
+            <label class="form-label text-primary">Username:</label>
+            <InputText @bind-Value="updateDto.Username" placeholder="Username" class="form-control" />
             <ValidationMessage For="@(() => updateDto.Username)" />
         </div>
+
         <div class="mb-3">
-            <small class=" text-primary">Current password: @existingUser.Password</small>
-            <br />
-            <small class=" text-primary">(Password cannot be changed)</small>
+            <label class="form-label text-primary">New password (leave empty to keep current):</label>
+            <InputText type="password" @bind-Value="passwordInput" placeholder="put your new password" class="form-control" />
         </div>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger">@errorMessage</div>
+        }
+
         <div class="mb-3">
-            @if (updateDto.Username.Length>3)
-            {
-                <button type="submit" class="btn btn-primary">Update User!</button>
-            }
-            
+            <button disabled="@(!IsUsernameValid)" type="submit" class="btn btn-primary">Update</button>
             <button type="button" class="btn btn-secondary" @onclick="Back">Go back</button>
         </div>
     </EditForm>
-    @if (updateDto.Username.Length < 3)
-    {
-        <div class="alert alert-danger">Username must have at least 3 characters</div>
-    }
 
-    @if (!string.IsNullOrEmpty(errorMessage))
+    @if (!IsUsernameValid)
     {
-        <div class="alert alert-danger">@errorMessage</div>
+        <div class="alert alert-warning">
+            Username must have at least 3 characters.
+        </div>
     }
 }
 
 @code {
     [Parameter] public int UserId { get; set; }
+    [CascadingParameter] public Task<AuthenticationState>? AuthenticationStateTask { get; set; }
 
     private UserDto? existingUser;
-    private UserUpdateDto updateDto = new() { Username = string.Empty };
+    private UserUpdateDto? updateDto;
+    private string passwordInput = string.Empty;
     private bool isLoading = true;
     private string errorMessage = string.Empty;
+    private bool canEdit;
+    private int? currentloggedinuser;
+    private bool IsUsernameValid => updateDto != null && updateDto.Username.Trim().Length >= 3;
 
     protected override async Task OnInitializedAsync()
     {
+        if (AuthenticationStateTask == null)
+        {
+            errorMessage = "Authentication state not available.";
+            isLoading = false;
+            return;
+        }
+
+        AuthenticationState authState = await AuthenticationStateTask;
+        ClaimsPrincipal? claimsPrincipal = authState?.User;
+        
+        if (claimsPrincipal == null)
+        {
+            errorMessage = "User not authenticated.";
+            isLoading = false;
+            return;
+        }
         try
         {
+            
+            string? userName = claimsPrincipal.Identity?.Name;
+            IEnumerable<Claim> claims = claimsPrincipal.Claims;
+            string userIdAsString = claims.Single(c => c.Type == "Id").Value;
+            currentloggedinuser = int.Parse(userIdAsString);
+
             existingUser = await UserService.GetUserByIdAsync(UserId);
-            if (existingUser != null)
+            canEdit = existingUser != null && currentloggedinuser.HasValue && existingUser.Id == currentloggedinuser.Value;
+
+            if (existingUser != null && canEdit)
             {
-                updateDto.Username = existingUser.Username;
+                updateDto = new UserUpdateDto
+                {
+                    Username = existingUser.Username,
+                    Password = null
+                };
+                passwordInput = string.Empty;
+            }
+            else
+            {
+                updateDto = null;
             }
         }
         catch (Exception ex)
         {
             errorMessage = $"Error loading user: {ex.Message}";
+            updateDto = null;
         }
         finally
         {
@@ -81,9 +135,17 @@ else
 
     private async Task UpdateUser()
     {
+        if (!canEdit || updateDto == null)
+        {
+            return;
+        }
+
         try
         {
             errorMessage = string.Empty;
+            
+            updateDto.Password = string.IsNullOrWhiteSpace(passwordInput) ? null : passwordInput;
+            
             await UserService.UpdateUserAsync(UserId, updateDto);
             Navigation.NavigateTo("/users");
         }
@@ -93,9 +155,7 @@ else
         }
     }
 
-    private void Back()
-    {
-        Navigation.NavigateTo("/users");
-    }
+    private void Back() => Navigation.NavigateTo("/users");
 
+   
 }

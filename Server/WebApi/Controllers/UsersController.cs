@@ -33,8 +33,8 @@ public class UsersController : ControllerBase
             user => new UserDto
             {
                 Id = user.Id,
-                Username = user.Username,
-                Password = user.Password,
+                Username = user.Username
+        
             }
         );
         
@@ -53,8 +53,7 @@ public class UsersController : ControllerBase
         var userToDto = new UserDto
         {
             Id = userToFind.Id,
-            Username = userToFind.Username,
-            Password = userToFind.Password
+            Username = userToFind.Username
         };
         
         return Ok(userToDto);
@@ -63,18 +62,22 @@ public class UsersController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(UserCreateDto user)
     {
+        if (string.IsNullOrWhiteSpace(user.Username))
+        {
+            return BadRequest("Username is required");
+        }
+        
         var userToUser = new User
         {
             Username = user.Username,
-            Password = user.Password
+            Password = user.Password ?? string.Empty  // Allow empty password
         };
         
         await repository.AddAsync(userToUser);
         var resultOfUser = new UserDto
         {
             Id = userToUser.Id,
-            Username = userToUser.Username,
-            Password = userToUser.Password
+            Username = userToUser.Username
         };
         
         return CreatedAtAction(nameof(GetById), new { id = userToUser.Id }, resultOfUser);
@@ -83,9 +86,17 @@ public class UsersController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Update([FromRoute] int id, UserUpdateDto user)
     {
+        if (string.IsNullOrWhiteSpace(user.Username) || string.IsNullOrWhiteSpace(user.Password))
+        {
+            return BadRequest("Username and password are required.");
+        }
         var userToFind = await repository.GetSingleAsync(id);
         if (userToFind == null || userToFind.Id != id) return NotFound();
         userToFind.Username = user.Username;
+        if (!string.IsNullOrWhiteSpace(user.Password))
+        {
+            userToFind.Password = user.Password;
+        }
         await repository.UpdateAsync(userToFind);
         return NoContent();
     }

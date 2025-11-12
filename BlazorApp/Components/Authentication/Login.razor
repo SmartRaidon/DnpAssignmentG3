@@ -1,0 +1,62 @@
+﻿@page "/login"
+@using BlazorApp.Auth
+@inject AuthenticationStateProvider AuthProvider
+@inject NavigationManager Navigation
+<h3 class="center text-primary">Login page madafaka</h3>
+<AuthorizeView>
+    <NotAuthorized>
+        <h3 class="text-primary">Please login</h3>
+        <label class="text-primary">User name:</label>
+        <input type="text" @bind="userName"/>
+        
+        <label class="text-primary">Password:</label>
+        <input type="password" @bind="password"/>
+     
+        @if (!string.IsNullOrEmpty(errorLabel))
+        {
+            <label style="color: red">
+                @errorLabel
+            </label>
+        }
+        <div class="mt-2">
+            <button @onclick="LoginAsync">Log in</button>
+            <button @onclick="NavigateToRegister">Register</button>
+        </div>
+    </NotAuthorized>
+    <Authorized>
+        <h3 class="text-primary">Hello you are logged in as, @context.User.Identity!.Name</h3>
+        <button @onclick="NavigateHome">Back to home</button>
+        <button @onclick="Logout">log me out now!</button>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    private string userName;
+    private string password;
+    private string errorLabel;
+
+    private async Task LoginAsync()
+    {
+        errorLabel = null;
+        try
+        {
+            await ((SimpleAuthProvider)AuthProvider).Login(userName, password);
+            Navigation.NavigateTo("/");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            errorLabel = $"Error: {e.Message}";
+        }
+       
+    }
+
+
+    private void NavigateToRegister() => Navigation.NavigateTo("/users/create");
+    private void NavigateHome() => Navigation.NavigateTo("/");
+    private async Task Logout()
+    {
+        await ((SimpleAuthProvider)AuthProvider).Logout();
+        Navigation.NavigateTo("/login", forceLoad: true);
+    }
+}
