@@ -56,8 +56,14 @@ public class SimpleAuthProvider : AuthenticationStateProvider
 
     public async Task Register(string username, string password)
     {
-        // write it later
-        Console.WriteLine("[ ! ] WRITE REG METHOD IN SIMPLEAUTH PROVIDER");
+        HttpResponseMessage response = await _httpClient.PostAsJsonAsync("Auth/register",
+            new CreateUserDto { Username = username, Password = password });
+        string content = await response.Content.ReadAsStringAsync();
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception(content);    
+        }
     }
     
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
