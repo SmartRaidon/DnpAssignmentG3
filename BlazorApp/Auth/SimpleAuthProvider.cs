@@ -53,6 +53,12 @@ public class SimpleAuthProvider : AuthenticationStateProvider
         await _jsRuntime.InvokeVoidAsync("sessionStorage.setItem", "currentUser", ""); 
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(new()))); 
     }
+
+    public async Task Register(string username, string password)
+    {
+        // write it later
+        Console.WriteLine("[ ! ] WRITE REG METHOD IN SIMPLEAUTH PROVIDER");
+    }
     
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
