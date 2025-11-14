@@ -24,7 +24,7 @@ public class UsersController : ControllerBase
         UserDto dto = new()
         {
             Id = user.Id,
-            UserName = user.Username
+            Username = user.Username
         };
         return Ok(dto);
     }
@@ -37,49 +37,9 @@ public class UsersController : ControllerBase
             .Select(u => new UserDto
         {
             Id = u.Id,
-            UserName = u.Username
+            Username = u.Username
         }).ToList());
         return Ok(users);
-    }
-
-    // POST - create /Users
-    [HttpPost("register")]
-    public async Task<ActionResult<UserDto>> RegisterAsync([FromBody] CreateUserDto request)
-    {
-        if (VerifyUserNameIsAvailable(request.UserName)) // verify username is available
-        {
-            User user = new() // create user
-            {
-                Username = request.UserName,
-                Password = request.Password
-            };
-            User created = await _userRepository.AddAsync(user); // add user to repository
-            UserDto dto = new() // create DTO
-            {
-                Id = created.Id,
-                UserName = created.Username
-            };
-            return Created($"/users/{dto.Id}", dto); // return created userDTO
-        }
-        else
-        {
-            return BadRequest($"Username: {request.UserName} already exists.");
-        }
-    }
-
-    // POST - login /Users
-    [HttpPost("login")]
-    public IActionResult Login([FromBody] CreateUserDto request)
-    {
-        var foundUser = _userRepository.GetMany().Any(u => u.Username == request.UserName && u.Password == request.Password);
-        if (foundUser)
-        {
-            return Ok(new { message = "Login successful!" }); // rewrite it to be usable, for now it's just a placeholder
-        }
-        else
-        {
-            return Unauthorized("Invalid username or password.");
-        }
     }
     
     // PUT - update /Users/{id}
@@ -89,13 +49,13 @@ public class UsersController : ControllerBase
         var user = _userRepository.GetMany().FirstOrDefault(u => u.Id == id);
         if (user == null)
             return NotFound("User not found");
-        user.Username = request.UserName;
+        user.Username = request.Username;
         user.Password = request.Password;
         await _userRepository.UpdateAsync(user);
         var response = new UserDto
         {
             Id = user.Id,
-            UserName = user.Username
+            Username = user.Username
         };
         return Ok(new
         {
@@ -113,13 +73,5 @@ public class UsersController : ControllerBase
             return NotFound("User not found");
         await _userRepository.DeleteAsync(id);
         return NoContent();
-    }
-    
-    private bool VerifyUserNameIsAvailable(string userName)
-    {
-        // Check if a user with the same username already exists
-        return !_userRepository
-            .GetMany()
-            .Any(u => string.Equals(u.Username, userName, StringComparison.OrdinalIgnoreCase));
     }
 }

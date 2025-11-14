@@ -1,0 +1,107 @@
+﻿@page "/test"
+@using ApiContracts
+@using BlazorApp.Services
+@inject IUserService UserService
+
+<PageTitle>Test page for API testing</PageTitle>
+
+<div>
+    <h2>Test: registration</h2>
+    <input @bind="_newUsername"/>
+    <input @bind="_newPassword"/>
+    <button @onclick="AddUser">Sign up</button>
+</div>
+
+<div>
+    <h2>Test: getting user by ID</h2>
+    <input type="number" @bind="_userID"/>
+    <p>@_responseString</p>
+    <button @onclick="() => GetUserById(_userID)">Get</button>
+</div>
+
+<div>
+    <h2>Test: getting all users</h2>
+    @if (_users == null)
+    {
+        <p>Loading...</p>
+    }
+    else if (_users.Count == 0)
+    {
+        <p>No users found.</p>
+    }
+    else
+    {
+        <ul>
+            @foreach (var user in _users)
+            {
+                <li>@user.Id - @user.Username</li>
+            }
+        </ul>
+    }
+    <button @onclick="GetUsers">Get</button>
+</div>
+
+@code
+{
+    string _newUsername = "";
+    string _newPassword = "";
+    string _responseString = "";
+    int _userID = 0;
+    private List<UserDto>? _users;
+    private UserDto? _user;
+
+    async Task AddUser()
+    {
+        if (!string.IsNullOrWhiteSpace(_newUsername) && !string.IsNullOrWhiteSpace(_newPassword))
+        {
+            
+            var user = new CreateUserDto
+            {
+                Username = _newUsername,
+                Password = _newPassword
+            };
+
+            try
+            {
+                await UserService.AddUserAsync(user);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+            ClearFields();
+        }
+    }
+    
+    async Task GetUsers()
+    {
+        try
+        {
+            _users = await UserService.GetUsersAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+
+    async Task GetUserById(int userId)
+    {
+        try
+        {
+            _user = await UserService.GetUserAsync(userId);
+            _responseString = _user.Username;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+    
+    private void ClearFields()
+    {
+        // clear fields
+        _newUsername = String.Empty;
+        _newPassword = String.Empty;
+    }
+}
