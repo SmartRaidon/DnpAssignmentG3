@@ -63,10 +63,10 @@
         {
             try
             {
-                await ((SimpleAuthProvider)AuthProvider).Register(_username, _password1);
                 _isDisabled = true;
                 _successLabel = "Successful registration! Redirecting to Login page...";
                 await Task.Delay(3000);
+                await ((SimpleAuthProvider)AuthProvider).Register(_username, _password1);
                 NavMgr.NavigateTo("/login");
             }
             catch (Exception e)
