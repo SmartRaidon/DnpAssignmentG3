@@ -71,13 +71,11 @@ public class PostController: ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(PostCreateDto post)
     {
-        var posttocreate = new Post
-        {
-  
-            Title = post.Title,
-            Body = post.Body,
-            UserId= post.UserId
-        };
+        var posttocreate = new Post(
+            post.Title,
+            post.Body,
+            post.UserId
+        );
         
         await repo.AddAsync(posttocreate);
         var resultofcreate = new PostDto

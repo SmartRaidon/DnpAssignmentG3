@@ -66,14 +66,10 @@ public class UsersController : ControllerBase
         {
             return BadRequest("Username is required");
         }
-        
-        var userToUser = new User
-        {
-            Username = user.Username,
-            Password = user.Password ?? string.Empty  // Allow empty password
-        };
-        
-        await repository.AddAsync(userToUser);
+
+        var userToUser = new User(user.Username, user.Password);
+
+    await repository.AddAsync(userToUser);
         var resultOfUser = new UserDto
         {
             Id = userToUser.Id,

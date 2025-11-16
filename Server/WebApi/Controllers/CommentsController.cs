@@ -70,14 +70,13 @@ public class CommentsController: ControllerBase
     [HttpPost]
     public async Task <IActionResult> Create(CommentCreateDto comment, [FromRoute] int postId)
     {
-        var commentToCreate = new Comment
-        {
-            PostId = postId,
-            Content = comment.Content,
-            UserId = comment.UserId
-        };
+        var commentToCreate = new Comment(
+            postId,
+            comment.UserId,
+            comment.Content
+        );
         await repository.AddAsync(commentToCreate);
-        var resultOfCreation = new Comment
+        var resultOfCreation = new CommentDto
         {
             Id = commentToCreate.Id,
             PostId = commentToCreate.PostId,
