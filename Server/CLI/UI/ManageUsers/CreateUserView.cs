@@ -63,11 +63,8 @@ public class CreateUserView
     
     private async Task<User> AddUserAsync(string name, string password)
     {
-        User user = new()
-        {
-            Username = name,
-            Password = password
-        };
+        User user = new(name, password);
+        
         
         User created = await userRepository.AddAsync(user);
         Console.WriteLine($"User created: {created.Id}");
