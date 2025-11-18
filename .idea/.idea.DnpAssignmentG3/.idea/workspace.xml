@@ -17,8 +17,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7fccd087-4ddf-4e8b-8292-3a55fc450f2f" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/BlazorApp/Components/Pages/Register.razor" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.DnpAssignmentG3/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.DnpAssignmentG3/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ApiContracts/Post/UpdatePostDTO.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ApiContracts/Post/UpdatePostDTO.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BlazorApp/Auth/SimpleAuthProvider.cs" beforeDir="false" afterPath="$PROJECT_DIR$/BlazorApp/Auth/SimpleAuthProvider.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BlazorApp/BlazorApp.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/BlazorApp/BlazorApp.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BlazorApp/Components/Authentication/Login.razor" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BlazorApp/Components/Layout/NavMenu.razor" beforeDir="false" afterPath="$PROJECT_DIR$/BlazorApp/Components/Layout/NavMenu.razor" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BlazorApp/Components/Pages/Home.razor" beforeDir="false" afterPath="$PROJECT_DIR$/BlazorApp/Components/Pages/Home.razor" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/BlazorApp/Components/Pages/Posts.razor" beforeDir="false" afterPath="$PROJECT_DIR$/BlazorApp/Components/Pages/Posts.razor" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BlazorApp/Components/Pages/Users.razor" beforeDir="false" afterPath="$PROJECT_DIR$/BlazorApp/Components/Pages/Users.razor" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BlazorApp/Components/Pages/Users.razor" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BlazorApp/Services/HttpPostService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/BlazorApp/Services/HttpPostService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Server/WebApi/Files/comments.json" beforeDir="false" afterPath="$PROJECT_DIR$/Server/WebApi/Files/comments.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Server/WebApi/Files/posts.json" beforeDir="false" afterPath="$PROJECT_DIR$/Server/WebApi/Files/posts.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Server/WebApi/Files/users.json" beforeDir="false" afterPath="$PROJECT_DIR$/Server/WebApi/Files/users.json" afterDir="false" />
@@ -51,15 +60,11 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/1d8b23e1e431b24cf7c1dfb82e9beaa902041dd7e3da0f56c5991144595/AuthorizeAttribute.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/eddc51a49dddbdbde4ba2ca25b90ace5a2b5c63fd7d9ea946adb53ab61da735/AuthenticationStateProvider.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ApiContracts/Authentication/LoginRequest.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock://C:/Users/aless/RiderProjects/DnpAssignmentG3/BlazorApp/Auth/SimpleAuthProvider.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/BlazorApp/Auth/SimpleAuthProvider.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/BlazorApp/Components/Authentication/Login.razor" root0="FORCE_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
-    <setting file="mock://C:/Users/aless/RiderProjects/DnpAssignmentG3/BlazorApp/Components/Authentication/Login.razor" root0="SKIP_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
-    <setting file="mock://C:/Users/aless/RiderProjects/DnpAssignmentG3/BlazorApp/Components/Pages/Comments.razor" root0="SKIP_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/BlazorApp/Components/Pages/Comments.razor" root0="FORCE_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
     <setting file="mock://C:/Users/aless/RiderProjects/DnpAssignmentG3/BlazorApp/Components/Pages/Posts.razor" root0="SKIP_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
-    <setting file="mock://C:/Users/aless/RiderProjects/DnpAssignmentG3/BlazorApp/Components/Pages/Posts.razor" root0="SKIP_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/BlazorApp/Components/Pages/Users.razor" root0="FORCE_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/BlazorApp/Components/Pages/Register.razor" root0="FORCE_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/aless/RiderProjects/DnpAssignmentG3/BlazorApp/Components/Pages/Users.razor" root0="SKIP_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/BlazorApp/Services/HttpCommentService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/BlazorApp/Services/HttpPostService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/BlazorApp/Services/HttpUserService.cs" root0="FORCE_HIGHLIGHTING" />
@@ -67,6 +72,10 @@
     <setting file="file://$PROJECT_DIR$/BlazorApp/Services/IUserService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Server/Shared/Class1.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Server/WebApi/Controllers/AuthenticationController.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/aless/RiderProjects/DnpAssignmentG3/Server/WebApi/Files/comments.json" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/aless/RiderProjects/DnpAssignmentG3/Server/WebApi/Files/comments.json" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/aless/RiderProjects/DnpAssignmentG3/Server/WebApi/Files/posts.json" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/aless/RiderProjects/DnpAssignmentG3/Server/WebApi/Files/users.json" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProjectColorInfo">{
@@ -289,7 +298,8 @@
       <workItem from="1762972954147" duration="11167000" />
       <workItem from="1763031715266" duration="703000" />
       <workItem from="1763324627364" duration="556000" />
-      <workItem from="1763462034479" duration="968000" />
+      <workItem from="1763462034479" duration="15147000" />
+      <workItem from="1763489458123" duration="4895000" />
     </task>
     <task id="LOCAL-00001" summary="assignment 4">
       <option name="closed" value="true" />
@@ -355,7 +365,15 @@
       <option name="project" value="LOCAL" />
       <updated>1762982069297</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="assignment6">
+      <option name="closed" value="true" />
+      <created>1763463083444</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1763463083445</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -382,7 +400,8 @@
     <MESSAGE value="assignment 5" />
     <MESSAGE value="assignment 5" />
     <MESSAGE value="assignment 6" />
-    <option name="LAST_COMMIT_MESSAGE" value="assignment 6" />
+    <MESSAGE value="assignment6" />
+    <option name="LAST_COMMIT_MESSAGE" value="assignment6" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

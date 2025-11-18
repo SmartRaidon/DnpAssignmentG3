@@ -2,6 +2,7 @@ using System.Security.Claims;
 using System.Text.Json;
 using ApiContracts;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.JSInterop;
 using LoginRequest = ApiContracts.Authentication.LoginRequest;
 
 namespace BlazorApp.Auth;
@@ -9,11 +10,12 @@ namespace BlazorApp.Auth;
 public class SimpleAuthProvider : AuthenticationStateProvider
 {
     private readonly HttpClient _httpClient;
-    private ClaimsPrincipal currentClaimsPrincipal;
+    private IJSRuntime _jsRuntime;
 
-    public SimpleAuthProvider(HttpClient httpClient)
+    public SimpleAuthProvider(HttpClient httpClient, IJSRuntime jsRuntime)
     {
         _httpClient = httpClient;
+        _jsRuntime = jsRuntime;
     }
 
     public async Task Login(LoginRequest request)
@@ -30,6 +32,10 @@ public class SimpleAuthProvider : AuthenticationStateProvider
         {
             PropertyNameCaseInsensitive = true
         })!;
+
+        string serializedData = JsonSerializer.Serialize(userDto);
+        await _jsRuntime.InvokeVoidAsync("sessionStorage.setItem", "currentUser", serializedData);
+        
         //build claims
         List<Claim> claims = new List<Claim>()
         {
@@ -39,24 +45,46 @@ public class SimpleAuthProvider : AuthenticationStateProvider
         
         //identity + principal
         ClaimsIdentity identity = new ClaimsIdentity(claims, "apiauth");
-        currentClaimsPrincipal = new ClaimsPrincipal(identity);
+        ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
         
         //notice Blazor of changed auth state
         NotifyAuthenticationStateChanged
-            (Task.FromResult(new AuthenticationState(currentClaimsPrincipal))
+            (Task.FromResult(new AuthenticationState(claimsPrincipal))
         );
     }
     //reset ClaimsPrincipal to empty one and notify framework about the change in auth state
     public async Task Logout()
     {
-        currentClaimsPrincipal = new();
-        NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(currentClaimsPrincipal)));
+        await _jsRuntime.InvokeVoidAsync("sessionStorage.setItem", "currentUser", "");
+        NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(new())));
     }
     
     //method called by Blazor framework to access current auth state
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        return new AuthenticationState(currentClaimsPrincipal ?? new());
-        // '??' checks id currentClaimsPrincipal is null, and if so returns prt after the ??
+        string userAsJson = "";
+        try
+        {
+            userAsJson = await _jsRuntime.InvokeAsync<string>("sessionStorage.getItem", "currentUser");
+        }
+        catch (InvalidOperationException e)
+        {
+            return new AuthenticationState(new());
+        }
+
+        if (string.IsNullOrEmpty(userAsJson))
+        {
+            return new AuthenticationState(new());
+        }
+
+        UserDTO userDto = JsonSerializer.Deserialize<UserDTO>(userAsJson) !;
+        List<Claim> claims = new List<Claim>()
+        {
+            new Claim(ClaimTypes.Name, userDto.Username),
+            new Claim(ClaimTypes.NameIdentifier, userDto.Id.ToString()),
+        };
+        ClaimsIdentity identity = new ClaimsIdentity(claims, "apiauth");
+        ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
+        return new AuthenticationState(claimsPrincipal);
     }
 }

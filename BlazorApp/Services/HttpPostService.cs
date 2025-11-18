@@ -30,7 +30,8 @@ public class HttpPostService : IPostService
 
     public async Task UpdatePost(UpdatePostDTO request)
     {
-        HttpResponseMessage httpResponse = await client.PutAsJsonAsync("Posts", request);
+        HttpResponseMessage httpResponse = await client.PutAsJsonAsync($"Posts/{request.Id}", request);
+
         string response = await httpResponse.Content.ReadAsStringAsync();
         if (!httpResponse.IsSuccessStatusCode)
         {

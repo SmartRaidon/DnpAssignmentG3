@@ -1,0 +1,67 @@
+@page "/Users"
+@using ApiContracts
+@using BlazorApp.Services
+@inject IUserService UserService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Register</PageTitle>
+
+<h1><strong>Please register</strong></h1>
+<hr/>
+
+<div class="mb-2"> <!-- gives margin bottom (2) !-->
+    <label>Username:</label>
+    <input type="text" @bind="_username" />
+    <!-- bound meaning that whatever the user types, will be stored in the username field in the coding block !-->
+</div>
+
+<div class="mb-2">
+    <label>Password:</label>
+    <input type="password" @bind="_password" />
+</div>
+
+@if (_message != "") //show message if there is any
+{
+    <p>@_message</p>
+}
+
+<button @onclick="RegisterAsync">Register</button>
+
+@code {
+    private string? _username;
+    private string? _password;
+    private string? _message;
+
+    private async Task RegisterAsync()
+    {
+        _message = "";
+
+        if (_username == "" || _password == "")
+        {
+            _message = "Both fields are required.";
+            return;
+        }
+
+        try
+        {
+            CreateUserDTO userDTO = new CreateUserDTO
+            {
+                Username = _username,
+                Password = _password
+            };
+
+            await UserService.AddUser(userDTO);
+
+            _message = "Registration successful!";
+
+            _username = String.Empty;
+            _password = String.Empty;
+
+            NavigationManager.NavigateTo("/");
+        }
+        catch (Exception e)
+        {
+            _message = $"Error: {e.Message}";
+        }
+    }
+}

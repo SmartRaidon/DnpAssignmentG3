@@ -1,4 +1,6 @@
 ﻿@page "/posts"
+@attribute [Authorize]
+@using System.Security.Claims
 @using ApiContracts
 @using BlazorApp.Services
 @inject IPostService _postService
@@ -8,39 +10,66 @@
 <PageTitle>Posts</PageTitle>
 
 <div>
-    <div class="adding-new-post">
+    <div>
         <h1>Add new post</h1>
-        <input placeholder="user Id" @bind="_newUserId" />
         <input placeholder="title" @bind="_newTitle" />
         <input placeholder="body" @bind="_newBody" />
         <button @onclick="AddNewPost">Add post</button>
     </div>
-    
+
     <hr/>
-    <div class="listing-posts">
+    <div>
         <h1>List of posts</h1>
         <ul>
             @foreach (var post in posts)
             {
                 <li>
                     <button @onclick="() => SelectPost(post)">
-                        <strong>Post title:</strong> @post.Title, 
-                        <strong>Author:</strong> @GetAuthorName(post.UserId)
+                        <strong>Post title:</strong> @post.Title,
+                        <strong>Author:</strong> @GetAuthorName(post.UserId) @*looks up for the username*@
                     </button>
                 </li>
             }
         </ul>
-        
     </div>
 
     <hr/>
-    <!-- Show post details -->
-    @if (selectedPost is not null)
+
+    @if (selectedPost is not null) //when selection a post from the list
     {
-        <div class="post-details">
+        bool isOwner = _currentUserId == selectedPost.UserId; //if the logged in user is the owner of it
+
+        <div>
             <h2>Post details</h2>
-            <strong>Title:</strong> @selectedPost.Title,  <strong>Body: </strong> @selectedPost.Body,  <strong>Author:</strong> @GetAuthorName(selectedPost.UserId)
-            <hr/>
+
+            @if (!_editPost) //not enabled to edt post, only checking post details
+            {
+                <p>
+                    <strong>Title:</strong> @selectedPost.Title<br />
+                    <strong>Body:</strong> @selectedPost.Body<br />
+                    <strong>Author:</strong> @GetAuthorName(selectedPost.UserId)
+                </p>
+            }
+            else if (isOwner) //can edit post and save details
+            {
+                <div>
+                    <label>Title: </label>
+                    <input @bind="_editTitle" />
+
+                    <label>Body: </label>
+                    <input @bind="_editBody" />
+
+                    <button @onclick="SaveEditAsync">Save</button>
+                </div>
+            }
+
+            @* EDIT button if user owns the post*@
+            @if (isOwner && !_editPost)
+            {
+                <button @onclick="BeginEdit">Edit post</button>
+            }
+
+            <hr />
             <h4>Comments</h4>
             @if (!SelectedPostComments.Any())
             {
@@ -52,21 +81,25 @@
                     @foreach (var c in SelectedPostComments)
                     {
                         <li>
-                            <strong>Author: @GetAuthorName(c.UserId)</strong> > has commented: @c.Body
+                            <strong>Author: </strong> @GetAuthorName(c.UserId) > has commented: @c.Body
                         </li>
                     }
                 </ul>
             }
-            <hr/>
-            <h4>Add comment to this post</h4>
-            <input placeholder="user id" @bind="_commentUserId" />
-            <input placeholder="body" @bind="_commentBody" />
-            <button @onclick="AddCommentToSelectedPost">Add comment</button>
+
+            <hr />
+                <h4>Add comment to this post</h4>
+                <input placeholder="body" @bind="_commentBody" />
+                <button @onclick="AddCommentToSelectedPost">Add comment</button>
         </div>
     }
 </div>
 
 @code {
+    [CascadingParameter] public Task<AuthenticationState> State { get; set; }
+
+    private int _currentUserId;
+
     private List<PostDTO> posts = new();
     private List<UserDTO> users = new();
     private List<CommentDTO> comments = new();
@@ -74,45 +107,56 @@
     private PostDTO? selectedPost;
 
     // add post
-    private int _newUserId;
     private string? _newTitle;
     private string? _newBody;
 
     // add comment
-    private int _commentUserId;
     private string? _commentBody;
+
+    // editing state
+    private bool _editPost;
+    private string? _editTitle;
+    private string? _editBody;
 
     protected override async Task OnInitializedAsync()
     {
-        posts = await _postService.GetMany();
-        users = await _userService.GetMany();
+        posts    = await _postService.GetMany();
+        users    = await _userService.GetMany();
         comments = await _commentService.GetMany();
+
+        // get current user id from claims
+        AuthenticationState authState = await State;
+        ClaimsPrincipal principal     = authState.User;
+
+        if (principal.Identity is null || !principal.Identity.IsAuthenticated)
+            return;
+
+        string idString = principal.Claims.Single(c => c.Type == "Id").Value;
+        _currentUserId  = int.Parse(idString);
     }
 
     private async Task AddNewPost()
     {
-        var createPostDto = new CreatePostDTO
+        CreatePostDTO createPostDto = new CreatePostDTO
         {
-            UserId = _newUserId,
-            Title  = _newTitle,
-            Body   = _newBody
+            UserId = _currentUserId,
+            Title  = _newTitle!,
+            Body   = _newBody!
         };
 
         var newPost = await _postService.AddPost(createPostDto);
         posts.Add(newPost);
 
-        // clear inputs
-        _newUserId = 0;
         _newTitle = string.Empty;
-        _newBody = string.Empty;
+        _newBody  = string.Empty;
     }
 
     private void SelectPost(PostDTO post)
     {
         selectedPost = post;
+        _editPost   = false; // reset edit mode when changing post
     }
 
-    // comments for currently selected post
     private IEnumerable<CommentDTO> SelectedPostComments =>
         selectedPost is null
             ? Enumerable.Empty<CommentDTO>()
@@ -121,29 +165,59 @@
     private string GetAuthorName(int userId)
     {
         var user = users.FirstOrDefault(u => u.Id == userId);
-
-        if (user is null)
-        {
-            return "Unknown author"; // or return string.Empty;
-        }
-        return user.Username;
+        return user?.Username ?? "Unknown author";
     }
 
     private async Task AddCommentToSelectedPost()
     {
+        if (selectedPost is null || string.IsNullOrWhiteSpace(_commentBody))
+            return;
+
         CreateCommentDTO createCommentDto = new CreateCommentDTO
         {
-            UserId = _commentUserId,
+            UserId = _currentUserId,
             PostId = selectedPost.Id,
             Body   = _commentBody
         };
 
         var newComment = await _commentService.AddComment(createCommentDto);
-
-        // add to local list so UI updates
         comments.Add(newComment);
 
-        _commentUserId = 0;
         _commentBody = string.Empty;
+    }
+
+    private void BeginEdit()
+    {
+        if (selectedPost is null || _currentUserId != selectedPost.UserId)
+            return; // check that only owner edit name
+
+        _editTitle = selectedPost.Title;
+        _editBody  = selectedPost.Body;
+        _editPost = true;
+    }
+
+    private async Task SaveEditAsync()
+    {
+        if (selectedPost is null || _currentUserId != selectedPost.UserId)
+            return; 
+
+        UpdatePostDTO updateDto = new UpdatePostDTO
+        {
+            Id     = selectedPost.Id,
+            UserId = selectedPost.UserId,
+            Title  = _editTitle!,
+            Body   = _editBody!
+        };
+
+        await _postService.UpdatePost(updateDto);
+
+        selectedPost.Title = _editTitle!;
+        selectedPost.Body  = _editBody!;
+
+        var index = posts.FindIndex(p => p.Id == selectedPost.Id);
+        if (index >= 0)
+            posts[index] = selectedPost;
+
+        _editPost = false;
     }
 }

@@ -1,14 +1,112 @@
 ﻿@page "/"
+@using System.Security.Claims
+@using ApiContracts.Authentication
+@using BlazorApp.Auth
+@inject AuthenticationStateProvider AuthProvider
 @inject NavigationManager NavigationManager
 
-<PageTitle>Home</PageTitle> 
-<h1>Reddit Clone</h1>
+<PageTitle>Home</PageTitle>
+
+<h1><strong>Reddit 2.0</strong></h1>
+<hr/>
+
 <AuthorizeView>
-    
     <Authorized>
-        <h3>Hello, @context.User.Identity.Name</h3>
+        <h3>Hello, @context.User.Identity?.Name</h3>
+
+        <p>Your claims include:</p>
+        <ul>
+            @foreach (var claim in context.User.Claims)
+            {
+                <li>
+                    @if (claim.Type == ClaimTypes.Name)
+                    {
+                        <label>Name: @claim.Value</label> //who is the user logged
+                    }
+                    else if (claim.Type == ClaimTypes.NameIdentifier || claim.Type == "Id")
+                    {
+                        <label>User Id: @claim.Value</label> //what is the user id of the logged in user
+                    }
+                    else
+                    {
+                        <label>@claim.Type: @claim.Value</label>
+                    }
+                </li>
+            }
+        </ul>
+
+        <p>Here you can browse interesting posts.</p>
+        <button @onclick='() => NavigationManager.NavigateTo("Posts")'>Surf through the posts</button>
+        
+        <hr />
+        
+        <button @onclick="LogoutAsync">Log out</button>
     </Authorized>
-    <NotAuthorized> You are not logged in! </NotAuthorized>
+
+    <NotAuthorized>
+        <h3>Hello,
+            please surf in!</h3>
+
+        <div class="mb-2">
+            <label>Username:</label>
+            <input type="text" @bind="_username" />
+        </div>
+
+        <div class="mb-2">
+            <label>Password:</label>
+            <input type="password" @bind="_password" />
+        </div>
+
+        @if (_message != "")
+        {
+            <p>@_message</p>
+        }
+
+        <button @onclick="LoginAsync">Log in</button>
+    </NotAuthorized>
 </AuthorizeView>
-Here you can browse interesting posts.
-<button @onclick='() => NavigationManager.NavigateTo("login")'>go to login</button>
+
+@code {
+    private string? _username;
+    private string? _password;
+    private string? _message;
+
+    private async Task LoginAsync()
+    {
+        _message = "";
+        if (_username == "" || _password == "")
+        {
+            _message = "Please fill in the fields";
+            return;
+        }
+        
+        try
+        {
+            LoginRequest loginRequest = new LoginRequest
+            {
+                Username = _username,
+                Password = _password
+            };
+
+            await ((SimpleAuthProvider)AuthProvider).Login(loginRequest);
+
+            _message = "Logged in successfully";
+
+            // After login stay on Home ("/") – the Authorized part will render now
+            NavigationManager.NavigateTo("/", forceLoad: false);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            _message = $"Error: {e.Message}";
+        }
+
+    }
+    private async Task LogoutAsync()
+    {
+        await ((SimpleAuthProvider)AuthProvider).Logout();
+        NavigationManager.NavigateTo("/", forceLoad: false);
+    }
+
+    
+}
