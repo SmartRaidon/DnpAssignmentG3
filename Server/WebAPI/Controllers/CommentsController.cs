@@ -10,10 +10,12 @@ namespace WebAPI.Controllers;
 public class CommentsController : ControllerBase
 {
     private readonly ICommentRepository _commentRepository;
+    private readonly IUserRepository _userRepository;
     
-    public CommentsController(ICommentRepository commentRepository)
+    public CommentsController(ICommentRepository commentRepository, IUserRepository userRepository)
     {
         _commentRepository = commentRepository;
+        _userRepository = userRepository;
     }
 
     // GET - /Comments/{id}
@@ -26,7 +28,7 @@ public class CommentsController : ControllerBase
             Id = comment.Id,
             PostId = comment.PostId,
             UserId = comment.UserId,
-            Username = comment.Username,
+            Username = comment.User.Username,
             Content = comment.Content
         };
         return Ok(dto);
@@ -43,7 +45,7 @@ public class CommentsController : ControllerBase
                 Id = c.Id,
                 PostId = c.PostId,
                 UserId = c.UserId,
-                Username = c.Username,
+                Username = c.User.Username,
                 Content = c.Content
             })
             .ToList());
@@ -52,20 +54,32 @@ public class CommentsController : ControllerBase
 
     // POST - create /Comments
     [HttpPost]
-    public async Task<ActionResult<CommentDto>> CreateCommentAsync(CommentDto request)
+    public async Task<ActionResult<CommentDto>> CreateCommentAsync(CreateCommentDto request)
     {
         Comment comment = new()
         {
-            Id = request.Id,
             PostId = request.PostId,
             UserId = request.UserId,
-            Username = request.Username,
             Content = request.Content
         };
         
         Comment created = await _commentRepository.AddAsync(comment);
+        
+        // Load the user to get the username
+        User user = await _userRepository.GetSingleAsync(created.UserId);
+        
+        // Convert to DTO for returning
+        CommentDto dto = new()
+        {
+            Id = created.Id,
+            PostId = created.PostId,
+            UserId = created.UserId,
+            Username = user.Username,    // <-- from Users table
+            Content = created.Content
+        };
+        
         Console.WriteLine($"Comment created: {created.Id}");
-        return Ok(created);
+        return Created($"/comments/{dto.Id}", dto);
     }
     
     // PUT - update /Comments/{id}
@@ -82,7 +96,7 @@ public class CommentsController : ControllerBase
             Id = comment.Id, // maybe not needed for editing
             PostId = comment.PostId, // maybe not needed for editing
             UserId = comment.UserId, // maybe not needed for editing
-            Username = comment.Username,
+            Username = comment.User.Username,
             Content = comment.Content
         };
         return Ok(new
