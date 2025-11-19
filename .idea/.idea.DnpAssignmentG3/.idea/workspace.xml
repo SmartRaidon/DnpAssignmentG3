@@ -17,20 +17,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7fccd087-4ddf-4e8b-8292-3a55fc450f2f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/BlazorApp/Components/Pages/Register.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Server/EfcRepositories/AppContext.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.DnpAssignmentG3/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.DnpAssignmentG3/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiContracts/Post/UpdatePostDTO.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ApiContracts/Post/UpdatePostDTO.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BlazorApp/Auth/SimpleAuthProvider.cs" beforeDir="false" afterPath="$PROJECT_DIR$/BlazorApp/Auth/SimpleAuthProvider.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BlazorApp/BlazorApp.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/BlazorApp/BlazorApp.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BlazorApp/Components/Authentication/Login.razor" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BlazorApp/Components/Layout/NavMenu.razor" beforeDir="false" afterPath="$PROJECT_DIR$/BlazorApp/Components/Layout/NavMenu.razor" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BlazorApp/Components/Pages/Home.razor" beforeDir="false" afterPath="$PROJECT_DIR$/BlazorApp/Components/Pages/Home.razor" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BlazorApp/Components/Pages/Posts.razor" beforeDir="false" afterPath="$PROJECT_DIR$/BlazorApp/Components/Pages/Posts.razor" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BlazorApp/Components/Pages/Users.razor" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BlazorApp/Services/HttpPostService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/BlazorApp/Services/HttpPostService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/WebApi/Files/comments.json" beforeDir="false" afterPath="$PROJECT_DIR$/Server/WebApi/Files/comments.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/WebApi/Files/posts.json" beforeDir="false" afterPath="$PROJECT_DIR$/Server/WebApi/Files/posts.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/WebApi/Files/users.json" beforeDir="false" afterPath="$PROJECT_DIR$/Server/WebApi/Files/users.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DnpAssignmentG3.sln" beforeDir="false" afterPath="$PROJECT_DIR$/DnpAssignmentG3.sln" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,20 +51,20 @@
     <setting file="file://$PROJECT_DIR$/ApiContracts/Authentication/LoginRequest.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/BlazorApp/Auth/SimpleAuthProvider.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/BlazorApp/Components/Pages/Comments.razor" root0="FORCE_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
-    <setting file="mock://C:/Users/aless/RiderProjects/DnpAssignmentG3/BlazorApp/Components/Pages/Posts.razor" root0="SKIP_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/BlazorApp/Components/Pages/Register.razor" root0="FORCE_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
-    <setting file="mock://C:/Users/aless/RiderProjects/DnpAssignmentG3/BlazorApp/Components/Pages/Users.razor" root0="SKIP_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/BlazorApp/Services/HttpCommentService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/BlazorApp/Services/HttpPostService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/BlazorApp/Services/HttpUserService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/BlazorApp/Services/ICommentService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/BlazorApp/Services/IUserService.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Server/EfcRepositories/AppContext.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Server/EfcRepositories/Entities/Comment.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Server/EfcRepositories/Entities/Post.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Server/EfcRepositories/Entities/User.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Server/EfcRepositories/Repositories/EfcRepository.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/aless/RiderProjects/DnpAssignmentG3/Server/Entities/Post.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Server/Shared/Class1.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Server/WebApi/Controllers/AuthenticationController.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock://C:/Users/aless/RiderProjects/DnpAssignmentG3/Server/WebApi/Files/comments.json" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock://C:/Users/aless/RiderProjects/DnpAssignmentG3/Server/WebApi/Files/comments.json" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock://C:/Users/aless/RiderProjects/DnpAssignmentG3/Server/WebApi/Files/posts.json" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock://C:/Users/aless/RiderProjects/DnpAssignmentG3/Server/WebApi/Files/users.json" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProjectColorInfo">{
@@ -86,27 +75,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;.NET Launch Settings Profile.WebApi: http (1).executor&quot;: &quot;Run&quot;,
-    &quot;.NET Launch Settings Profile.WebApi: http.executor&quot;: &quot;Run&quot;,
-    &quot;.NET Launch Settings Profile.WebApi: https.executor&quot;: &quot;Run&quot;,
-    &quot;.NET Project.Client\\BlazorApp.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;deletionFromPopupRequiresConfirmation&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Alessia2&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;configurable.group.appearance&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    ".NET Launch Settings Profile.WebApi: http (1).executor": "Run",
+    ".NET Launch Settings Profile.WebApi: http.executor": "Run",
+    ".NET Launch Settings Profile.WebApi: https.executor": "Run",
+    ".NET Project.Client\\BlazorApp.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "deletionFromPopupRequiresConfirmation": "false",
+    "git-widget-placeholder": "Alessia2",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "dotNetConsole",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected=".NET Launch Settings Profile.WebApi: https">
     <configuration name="CLI" type="DotNetProject" factoryName=".NET Project">
       <option name="EXE_PATH" value="" />
@@ -299,7 +288,8 @@
       <workItem from="1763031715266" duration="703000" />
       <workItem from="1763324627364" duration="556000" />
       <workItem from="1763462034479" duration="15147000" />
-      <workItem from="1763489458123" duration="4895000" />
+      <workItem from="1763489458123" duration="7097000" />
+      <workItem from="1763544597304" duration="9994000" />
     </task>
     <task id="LOCAL-00001" summary="assignment 4">
       <option name="closed" value="true" />
@@ -373,7 +363,15 @@
       <option name="project" value="LOCAL" />
       <updated>1763463083445</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="authorization added for post">
+      <option name="closed" value="true" />
+      <created>1763494490023</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1763494490023</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -401,7 +399,8 @@
     <MESSAGE value="assignment 5" />
     <MESSAGE value="assignment 6" />
     <MESSAGE value="assignment6" />
-    <option name="LAST_COMMIT_MESSAGE" value="assignment6" />
+    <MESSAGE value="authorization added for post" />
+    <option name="LAST_COMMIT_MESSAGE" value="authorization added for post" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
