@@ -1,6 +1,8 @@
-﻿using ApiContracts.DTO.Comment;
+﻿using System.Collections.Immutable;
+using ApiContracts.DTO.Comment;
 using Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RepositoryContracts;
 
 namespace WebApi.Controllers;
@@ -15,35 +17,31 @@ public class CommentsController: ControllerBase
     }
 
     [HttpGet]
-    public  IActionResult GetAll([FromRoute] int postId,  [FromQuery] int? userId)
+    public async Task<  IActionResult > GetAll([FromRoute] int postId,  [FromQuery] int? userId)
     {
-        var comments = repository.GetMany().Where(com => com.PostId==postId).ToList();
-        if (comments ==null ||comments.Count == 0)
+        var query = repository.GetMany()
+            .Where(com => com.PostId == postId);
+        if (userId.HasValue)
         {
-            //throw new Exception("No Comments Found");
+            query = query.Where(com => com.UserId == userId.Value);
+        }
+
+        var comments = await query.ToListAsync();
+
+        if (comments.Count == 0)
+        {
             return NotFound();
         }
 
- 
-
-        if (userId.HasValue)
+        var commentsDto = comments.Select(comment => new CommentDto
         {
-            comments= comments.Where(com => com.UserId==userId.Value).ToList();
-        }
+            Id = comment.Id,
+            PostId = comment.PostId,
+            Content = comment.Content,
+            UserId = comment.UserId,
+        });
 
-     
-
-        var commentsDTO = comments.Select(comment => new CommentDto()
-            {
-                Id = comment.Id,
-                PostId = comment.PostId,
-                Content = comment.Content,
-                UserId = comment.UserId,
-
-            }
-        );
-        
-        return Ok(commentsDTO);
+        return Ok(commentsDto);
     }
 
     [HttpGet("{id}")]
@@ -83,6 +81,7 @@ public class CommentsController: ControllerBase
             Content = commentToCreate.Content,
             UserId = commentToCreate.UserId,
         };
+        
         return CreatedAtAction(nameof(GetById), new { postId = postId, id = commentToCreate.Id }, resultOfCreation);
     }
 

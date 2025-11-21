@@ -13,8 +13,8 @@ public class User
         Password = password;
     }
     public int Id { get; set; }
-    public string Username { get; set; } = string.Empty;
-    public string Password { get; set; }=string.Empty;
+    public string Username { get; set; }
+    public string Password { get; set; }
 
     public List<Post> Posts { get; set; } = new List<Post>();
     public List<Comment> Comments { get; set; }= new List<Comment>();

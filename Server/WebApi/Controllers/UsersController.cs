@@ -1,6 +1,8 @@
 ﻿using ApiContracts.DTO.User;
 using Entities;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RepositoryContracts;
 
 namespace WebApi.Controllers;
@@ -18,16 +20,18 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetAll([FromQuery] string? username)
+    public async Task<IActionResult> GetAll([FromQuery] string? username)
     {
-        var userList = repository.GetMany().ToList();
-  
+        var query = repository.GetMany(); 
+
         if (!string.IsNullOrWhiteSpace(username))
         {
-            userList = userList
-                .Where(u => u.Username.Contains(username, StringComparison.OrdinalIgnoreCase))
-                .ToList();
+            var lowered = username.ToLower();
+            query = query.Where(u => u.Username.ToLower().Contains(lowered));
         }
+
+        var userList = await query.ToListAsync();
+        
         if (userList.Count == 0) return NotFound("No users found matching criteria.");
         var usersDTO = userList.Select(
             user => new UserDto
@@ -62,9 +66,9 @@ public class UsersController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(UserCreateDto user)
     {
-        if (string.IsNullOrWhiteSpace(user.Username))
+        if (string.IsNullOrWhiteSpace(user.Username) || string.IsNullOrWhiteSpace(user.Password))
         {
-            return BadRequest("Username is required");
+            return BadRequest("Username  and password is required");
         }
 
         var userToUser = new User(user.Username, user.Password);

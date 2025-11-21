@@ -1,5 +1,6 @@
 ﻿using ApiContracts.DTO.User;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RepositoryContracts;
 
 namespace WebApi.Controllers;
@@ -19,26 +20,18 @@ public class AuthController :ControllerBase
     {
         
         if (request == null)
-        {
             return BadRequest("Login request is required");
-        }
-    
+
         if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password))
-        {
             return Unauthorized("Username and password are required");
-        }
 
-        List<Entities.User> matches = userRepository.GetMany()
-            .Where(u => u.Username.Equals(request.Username, StringComparison.OrdinalIgnoreCase))
-            .ToList();
+        var loweredUsername = request.Username.ToLower();
 
-        if (matches.Count == 0)
-        {
-            return Unauthorized("Invalid username or password");
-        }
+        var user = await userRepository.GetMany()
+            .Where(u => u.Username.ToLower() == loweredUsername)
+            .FirstOrDefaultAsync();
 
-        Entities.User? user = matches.FirstOrDefault(u => u.Password == request.Password);
-        if (user is null)
+        if (user is null || user.Password != request.Password)
         {
             return Unauthorized("Invalid username or password");
         }

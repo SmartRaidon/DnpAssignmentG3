@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EfcRepo.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    [Migration("20251116200448_initial")]
+    [Migration("20251117090235_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -36,7 +36,6 @@ namespace EfcRepo.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Username")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

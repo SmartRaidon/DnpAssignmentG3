@@ -1,6 +1,7 @@
 ﻿using ApiContracts.DTO.Post;
 using Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RepositoryContracts;
 
 namespace WebApi.Controllers;
@@ -16,21 +17,20 @@ public class PostController: ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetAll([FromQuery] string? title, [FromQuery] int? userId)
+    public async Task<IActionResult> GetAll([FromQuery] string? title, [FromQuery] int? userId)
     {
-        var posts =  repo.GetMany().ToList();
+        var query = repo.GetMany();
         if (!string.IsNullOrWhiteSpace(title))
         {
-            posts = posts
-                .Where(p => p.Title.Contains(title, StringComparison.OrdinalIgnoreCase))
-                .ToList();
+            var lowered = title.ToLower();
+            query = query.Where(p => p.Title.ToLower().Contains(lowered));
         }
         if (userId.HasValue)
         {
-            posts = posts
-                .Where(p => p.UserId == userId.Value)
-                .ToList();
+            query = query.Where(p => p.UserId == userId.Value);
         }
+        var posts =  await query.ToListAsync();
+      
         
         if (posts.Count ==0 || posts == null)
         {

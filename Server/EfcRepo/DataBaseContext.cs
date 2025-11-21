@@ -5,13 +5,14 @@ namespace EfcRepo;
 
 public class DataBaseContext : DbContext
 {
+   
     public DbSet<User> Users => Set<User>();
     public DbSet<Post> Posts => Set<Post>();
     public DbSet<Comment> Comments => Set<Comment>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlite("Data Source=forum.db");
+        optionsBuilder.UseSqlite("Data Source=C:\\Users\\Daniel\\RiderProjects\\DnpAssignmentG3\\Server\\EfcRepo\\forum.db");
     }
 
 }

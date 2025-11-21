@@ -1,3 +1,4 @@
+using EfcRepo;
 using EfcRepo.Repository;
 using FileRepositories;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -16,8 +17,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IPostRepository, EfcPostRepository>();
 builder.Services.AddScoped<IUserRepository, EfcUserRepository>();
 builder.Services.AddScoped<ICommentRepository, EfcCommentRepository>();
-
-
+builder.Services.AddDbContext<DataBaseContext>();
 var app = builder.Build();
 app.MapControllers();
 // Configure the HTTP request pipeline.

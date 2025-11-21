@@ -33,7 +33,6 @@ namespace EfcRepo.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Username")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
