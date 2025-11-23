@@ -11,12 +11,14 @@ public class AppContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlite("Data Source=app.db");
+        optionsBuilder.UseSqlite("Data Source=C:\\Users\\Smarties\\RiderProjects\\DnpAssignmentG3\\Server\\EfcRepositories\\app.db");
     }
 
-    /*
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<User>().HasKey(u => u.Id);
-    }*/
+        // modelBuilder.Entity<User>().HasKey(u => u.Id);
+        base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<User>().Property(u => u.Username).UseCollation("NOCASE"); // fixing case-sensitivity in efc when we validate username
+    }
 }

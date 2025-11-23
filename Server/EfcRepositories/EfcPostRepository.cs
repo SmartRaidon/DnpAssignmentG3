@@ -43,7 +43,10 @@ public class EfcPostRepository : IPostRepository
 
     public async Task<Post> GetSingleAsync(int id)
     {
-        Post? existing = await _context.Posts.SingleOrDefaultAsync(p => p.Id == id);
+        // the Include parts are important
+        Post? existing = await _context.Posts
+            .Include(p => p.User)
+            .FirstOrDefaultAsync(p => p.Id == id);
         if (existing == null)
         {
             throw new Exception($"Post with id {id} not found");

@@ -1,6 +1,7 @@
 ﻿using ApiContracts;
 using Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RepositoryContracts;
 
 namespace WebAPI.Controllers;
@@ -33,12 +34,12 @@ public class UsersController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetUsersAsync()
     {
-        var users = await Task.Run(() => _userRepository.GetMany()
+        var users = await _userRepository.GetMany()
             .Select(u => new UserDto
         {
             Id = u.Id,
             Username = u.Username
-        }).ToList());
+        }).ToListAsync();
         return Ok(users);
     }
     

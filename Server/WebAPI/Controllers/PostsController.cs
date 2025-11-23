@@ -1,6 +1,7 @@
 ﻿using ApiContracts;
 using Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RepositoryContracts;
 
 namespace WebAPI.Controllers;
@@ -38,7 +39,7 @@ public class PostsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetPostsAsync()
     {
-        var posts = await Task.Run(() => _postRepository.GetMany()
+        var posts = await _postRepository.GetMany()
             .Select(p => new PostDto
             {
                 Id = p.Id,
@@ -46,7 +47,7 @@ public class PostsController : ControllerBase
                 Title = p.Title,
                 Author = p.User.Username,
                 UserId = p.UserId
-            }).ToList());
+            }).ToListAsync();
         return Ok(posts);
     }
 
@@ -76,8 +77,8 @@ public class PostsController : ControllerBase
             Author = user.Username,
             UserId = created.UserId
         };
-        Console.WriteLine($"Post created: {created.Id}");
-        return Ok(created);
+        Console.WriteLine($"Post created: {dto.Id}");
+        return Ok(dto);
     }
 
     // PUT - update /Posts/{id}

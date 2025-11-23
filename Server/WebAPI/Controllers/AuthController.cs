@@ -66,6 +66,6 @@ public class AuthController : ControllerBase
         // Check if a user with the same username already exists
         return !_userRepository
             .GetMany()
-            .Any(u => string.Equals(u.Username, userName, StringComparison.OrdinalIgnoreCase));
+            .Any(u => u.Username == userName);
     }
 }
