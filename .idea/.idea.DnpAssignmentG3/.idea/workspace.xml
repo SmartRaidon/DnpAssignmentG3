@@ -17,52 +17,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7fccd087-4ddf-4e8b-8292-3a55fc450f2f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Server/EfcRepositories/.config/dotnet-tools.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Server/EfcRepositories/EfcRepositories.csproj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Server/EfcRepositories/Entities/Comment.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Server/EfcRepositories/Entities/User.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Server/EfcRepositories/Migrations/20251119161737_AddPostUserCommentEntities.Designer.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Server/EfcRepositories/Migrations/20251119161737_AddPostUserCommentEntities.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Server/EfcRepositories/Migrations/20251119165011_AddCommentEntity.Designer.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Server/EfcRepositories/Migrations/20251119165011_AddCommentEntity.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Server/EfcRepositories/Migrations/20251119165045_AddPostEntity.Designer.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Server/EfcRepositories/Migrations/20251119165045_AddPostEntity.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Server/EfcRepositories/Migrations/AppContextModelSnapshot.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Server/EfcRepositories/Repositories/EfcCommentRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Server/EfcRepositories/Repositories/EfcPostRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Server/EfcRepositories/Repositories/EfcUserRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Server/EfcRepositories/app.db" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Server/EfcRepositories/global.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.DnpAssignmentG3/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.DnpAssignmentG3/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiContracts/Post/PostDTO.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ApiContracts/Post/PostDTO.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DnpAssignmentG3.sln" beforeDir="false" afterPath="$PROJECT_DIR$/DnpAssignmentG3.sln" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DnpAssignmentG3.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/DnpAssignmentG3.sln.DotSettings.user" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/CLI/CLI.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Server/CLI/CLI.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/CLI/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Server/CLI/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/CLI/UI/CliApp.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Server/CLI/UI/CliApp.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/CLI/UI/Views/ManageComments/CreateCommentView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Server/CLI/UI/Views/ManageComments/CreateCommentView.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/CLI/UI/Views/ManagePosts/CreatePostView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Server/CLI/UI/Views/ManagePosts/CreatePostView.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/CLI/UI/Views/ManagePosts/ListPostsView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Server/CLI/UI/Views/ManagePosts/ListPostsView.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/CLI/UI/Views/ManagePosts/SinglePostView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Server/CLI/UI/Views/ManagePosts/SinglePostView.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/CLI/UI/Views/ManagePosts/UpdatePostView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Server/CLI/UI/Views/ManagePosts/UpdatePostView.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/CLI/UI/Views/ManageUsers/CreateUserView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Server/CLI/UI/Views/ManageUsers/CreateUserView.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/CLI/UI/Views/ManageUsers/ListUsersView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Server/CLI/UI/Views/ManageUsers/ListUsersView.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/CLI/UI/Views/ManageUsers/SingleUsersView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Server/CLI/UI/Views/ManageUsers/SingleUsersView.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/EfcRepositories/AppContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Server/EfcRepositories/AppContext.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/Entities/Comment.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/Entities/Entities.csproj" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/Entities/Post.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Server/EfcRepositories/Entities/Post.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/Entities/User.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/RepositoryContracts/ICommentRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Server/EfcRepositories/Repositories/ICommentRepository.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/RepositoryContracts/IPostRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Server/EfcRepositories/Repositories/IPostRepository.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/RepositoryContracts/IUserRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Server/EfcRepositories/Repositories/IUserRepository.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/RepositoryContracts/RepositoryContracts.csproj" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/WebApi/Controllers/AuthenticationController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Server/WebApi/Controllers/AuthenticationController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/WebApi/Controllers/CommentsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Server/WebApi/Controllers/CommentsController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/WebApi/Controllers/PostsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Server/WebApi/Controllers/PostsController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Server/WebApi/Controllers/UsersController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Server/WebApi/Controllers/UsersController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/WebApi/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Server/WebApi/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/WebApi/WebApi.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Server/WebApi/WebApi.csproj" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -349,7 +305,7 @@
       <workItem from="1763462034479" duration="15147000" />
       <workItem from="1763489458123" duration="7097000" />
       <workItem from="1763544597304" duration="22129000" />
-      <workItem from="1764267180768" duration="9275000" />
+      <workItem from="1764267180768" duration="10492000" />
     </task>
     <task id="LOCAL-00001" summary="assignment 4">
       <option name="closed" value="true" />
@@ -439,7 +395,15 @@
       <option name="project" value="LOCAL" />
       <updated>1763571809643</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="assignment 7 done including queries">
+      <option name="closed" value="true" />
+      <created>1764276782214</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1764276782214</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -469,7 +433,8 @@
     <MESSAGE value="assignment6" />
     <MESSAGE value="authorization added for post" />
     <MESSAGE value="relationship between entities" />
-    <option name="LAST_COMMIT_MESSAGE" value="relationship between entities" />
+    <MESSAGE value="assignment 7 done including queries" />
+    <option name="LAST_COMMIT_MESSAGE" value="assignment 7 done including queries" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

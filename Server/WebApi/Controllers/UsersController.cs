@@ -50,7 +50,7 @@ public class UsersController : ControllerBase
             UserDTO userDto = MapUserToDto(user);
             return Ok(userDto);
         }
-        catch (InvalidCastException)
+        catch (InvalidOperationException)
         {
             return NotFound($"User with id {id} not found");
         }
