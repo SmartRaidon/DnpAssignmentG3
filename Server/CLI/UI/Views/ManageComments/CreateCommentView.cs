@@ -1,4 +1,4 @@
-﻿using Entities;
+﻿using EfcRepositories;
 using RepositoryContracts;
 
 namespace CLI.UI.ManageComment;

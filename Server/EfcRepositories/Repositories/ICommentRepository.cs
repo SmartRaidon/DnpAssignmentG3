@@ -1,5 +1,4 @@
-﻿using Entities;
-
+﻿using EfcRepositories;
 namespace RepositoryContracts;
 
 public interface ICommentRepository

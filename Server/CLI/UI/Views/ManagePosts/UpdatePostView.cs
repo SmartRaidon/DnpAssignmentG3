@@ -1,4 +1,5 @@
-﻿using Entities;
+﻿using EfcRepositories;
+using EfcRepositories.Repositories;
 using RepositoryContracts;
 
 namespace CLI.UI.ManagePost;

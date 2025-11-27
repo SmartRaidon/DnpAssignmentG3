@@ -1,6 +1,5 @@
-﻿using Entities;
-
-namespace RepositoryContracts;
+﻿
+namespace EfcRepositories.Repositories;
 
 public interface IPostRepository
 {

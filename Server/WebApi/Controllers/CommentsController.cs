@@ -1,6 +1,7 @@
 ﻿using ApiContracts;
-using Entities;
+using EfcRepositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RepositoryContracts;
 
 namespace WebApi.Controllers;
@@ -20,25 +21,29 @@ public class CommentsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<CommentDTO>>> GetMany()
     {
-        IQueryable<Comment> comments = await _commentRepository.GetManyAsync();
+        IQueryable<Comment> query = await _commentRepository.GetManyAsync();
 
+        List<Comment> comments = await query.ToListAsync();
+        
         List<CommentDTO> commentDtos = MapCommentsToDto(comments);
         
         return Ok(commentDtos);
     }
 
-    [HttpGet("/by-post/{postId}")]
-    public async Task<ActionResult<CommentDTO>> GetManyByPostId([FromRoute] int postId)
+    [HttpGet("by-post/{postId:int}")]
+    public async Task<ActionResult<List<CommentDTO>>> GetManyByPostId([FromRoute] int postId)
     {
-        IQueryable<Comment> comments = await _commentRepository.GetManyByPostId(postId);
+        IQueryable<Comment> query = await _commentRepository.GetManyByPostId(postId);
 
+        List<Comment> comments = await query.ToListAsync();
+        
         List<CommentDTO> commentDtos = MapCommentsToDto(comments);
         
         return Ok(commentDtos);
     }
     
     // GET by Id action
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
     public async Task<ActionResult<CommentDTO>> GetSingle([FromRoute] int id)
     {
         Comment comment = await _commentRepository.GetSingleAsync(id);
@@ -60,12 +65,12 @@ public class CommentsController : ControllerBase
         };
         Comment commentAdded = await _commentRepository.AddAsync(commentToAdd);
 
-        CommentDTO userToReturn = MapCommentToDto(commentAdded);
+        CommentDTO dtoToReturn = MapCommentToDto(commentAdded);
         
-        return Ok(userToReturn);
+        return Ok(dtoToReturn);
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("{id:int}")]
     public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateCommentDTO request)
     {
         Comment commentToUpdate = MapDtoToComment(id, request);
@@ -76,7 +81,7 @@ public class CommentsController : ControllerBase
     }
     
     // DELETE action
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
         await _commentRepository.DeleteAsync(id);
@@ -107,7 +112,7 @@ public class CommentsController : ControllerBase
     }
 
     // Converts list of comments to a list of CommentDTO for API responses
-    private List<CommentDTO> MapCommentsToDto(IQueryable<Comment> comments)
+    private List<CommentDTO> MapCommentsToDto(IEnumerable<Comment> comments)
     {
         List<CommentDTO> commentDtos = new List<CommentDTO>();
         foreach (var comment in comments)

@@ -1,7 +1,8 @@
 ﻿using ApiContracts;
-using Entities;
+using EfcRepositories;
+using EfcRepositories.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using RepositoryContracts;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebApi.Controllers;
 
@@ -18,10 +19,21 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<UserDTO>>> GetMany()
+    public async Task<ActionResult<List<UserDTO>>> GetMany([FromQuery] string? usernameContains = null)
     {
-        IQueryable<User> users = await _userRepository.GetManyAsync();
-
+        //base query form repo
+        IQueryable<User> query = await _userRepository.GetManyAsync();
+        
+        //filter from query string
+        if (!string.IsNullOrWhiteSpace(usernameContains))
+        {
+            string lowered = usernameContains.ToLower();
+            query = query.Where(u => u.Username.ToLower().Contains(lowered));
+        }
+        //execute query async in database
+        List<User> users = await query.ToListAsync();
+        
+        //map to DTO
         List<UserDTO> userDtos = MapUsersToDto(users);
         
         return Ok(userDtos);
@@ -31,11 +43,19 @@ public class UsersController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<UserDTO>> GetSingle([FromRoute] int id)
     {
-        User user = await _userRepository.GetSingleAsync(id);
+        try
+        {
+            User user = await _userRepository.GetSingleAsync(id);
 
-        UserDTO userDto = MapUserToDto(user);
+            UserDTO userDto = MapUserToDto(user);
+            return Ok(userDto);
+        }
+        catch (InvalidCastException)
+        {
+            return NotFound($"User with id {id} not found");
+        }
         
-        return Ok(userDto);
+        
     }
     
     [HttpPost]
@@ -92,7 +112,7 @@ public class UsersController : ControllerBase
     }
 
 
-    private List<UserDTO> MapUsersToDto(IQueryable<User> users)
+    private List<UserDTO> MapUsersToDto(IEnumerable<User> users)
     {
         List<UserDTO> userDtos = new List<UserDTO>();
         foreach (var user in users)

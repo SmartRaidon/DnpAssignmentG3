@@ -3,7 +3,8 @@ using CLI.UI.ManagePost;
 using CLI.UI.ManageUsers;
 using CLI.UI.Views.ManagePost;
 using CLI.UI.Views.ManageUsers;
-using Entities;
+using EfcRepositories;
+using EfcRepositories.Repositories;
 using RepositoryContracts;
 
 namespace CLI.UI;

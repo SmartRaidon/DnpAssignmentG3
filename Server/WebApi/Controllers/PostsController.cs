@@ -1,6 +1,8 @@
 ﻿using ApiContracts;
-using Entities;
+using EfcRepositories;
+using EfcRepositories.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RepositoryContracts;
 
 namespace WebApi.Controllers;
@@ -23,20 +25,68 @@ public class PostsController : ControllerBase
     {
         //queryable list of post entities
         //gets all posts from repository
-        IQueryable<Post> posts = await _postRepository.GetManyAsync();
-        //converts them into DTO
+        IQueryable<Post> query = await _postRepository.GetManyAsync();
+        //execute query async
+        List<Post> posts = await query.ToListAsync();
+        //convert to dtos
         List<PostDTO> postDtos = MapPostsToDto(posts);
-
         return Ok(postDtos);
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<PostDTO>> GetSingle([FromRoute] int id)
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<PostDTO>> GetSingle(
+        [FromRoute] int id,
+        [FromQuery] bool includeAuthor = false,
+        [FromQuery] bool includeComments = false)
     {
-        Post post = await _postRepository.GetSingleAsync(id);
+        //start from GetMany, filter by id
+        IQueryable<Post> queryForPost = (await _postRepository.GetManyAsync())
+            .Where(p => p.Id == id)
+            .AsQueryable();
+        
+        //include author if requested
+        if (includeAuthor)
+        {
+            queryForPost = queryForPost.Include(p => p.User);
+        }
 
-        PostDTO postDto = MapPostToDto(post);
+        if (includeComments)
+        {
+            queryForPost = queryForPost.Include(p => p.Comments);
+        }
+        
+        //project to PostDTO (optional with author and comments)
+        PostDTO? postDto = await queryForPost.Select(post => new PostDTO()
+        {
+            Id = post.Id,
+            Title = post.Title,
+            Body = post.Body,
+            UserId = post.UserId,
 
+            Author = includeAuthor
+                ? new UserDTO()
+                {
+                    Id = post.User.Id,
+                    Username = post.User.Username
+                }
+                : null,
+
+            Comments = includeComments
+                ? post.Comments.Select(c => new CommentDTO
+                {
+                    Id = c.Id,
+                    Body = c.Body,
+                    UserId = c.UserId,
+                    PostId = c.PostId
+                }).ToList()
+                : new List<CommentDTO>()
+        }).FirstOrDefaultAsync();//execute sql and gets one row
+        
+        //404 if not found
+        if (postDto is null)
+        {
+            return NotFound();
+        }
         return Ok(postDto);
     }
 
@@ -97,7 +147,7 @@ public class PostsController : ControllerBase
         };
     }
 
-    private List<PostDTO> MapPostsToDto(IQueryable<Post> posts)
+    private List<PostDTO> MapPostsToDto(IEnumerable<Post> posts)
     {
         List<PostDTO> postDtos = new List<PostDTO>();
         foreach (var post in posts)
@@ -107,8 +157,5 @@ public class PostsController : ControllerBase
         }
 
         return postDtos;
-        {
-            
-        }
     }
 }
