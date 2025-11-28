@@ -34,7 +34,7 @@ public class SinglePostView
             foreach (var comment in comments)
             {
                 //var commentAuthor = await userRepository.GetSingleAsync(comment.UserId);
-                Console.WriteLine($"[ {comment.Username} [ {comment.UserId} ]: {comment.Content}");
+                Console.WriteLine($"[ {comment.UserId} ]: {comment.Content}");
             }
         
             // listing available commands
@@ -73,7 +73,6 @@ public class SinglePostView
         {
             PostId = postId,
             Content = content,
-            Username = currentUser.Username,
             UserId = currentUser.Id
         };
         

@@ -40,7 +40,6 @@ public class CommentFileRepository : ICommentRepository
             throw new InvalidOperationException($"Comment with ID: {comment.Id} not found.");
         }
         existingComment.UserId = comment.UserId;
-        existingComment.Username = comment.Username;
         existingComment.Content = comment.Content;
         existingComment.PostId = comment.PostId; 
         existingComment.Id = comment.Id;

@@ -1,6 +1,7 @@
 ﻿using ApiContracts;
 using Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RepositoryContracts;
 
 namespace WebAPI.Controllers;
@@ -10,10 +11,12 @@ namespace WebAPI.Controllers;
 public class PostsController : ControllerBase
 {
     private readonly IPostRepository _postRepository;
+    private readonly IUserRepository _userRepository;
     
-    public PostsController(IPostRepository postRepository)
+    public PostsController(IPostRepository postRepository,  IUserRepository userRepository)
     {
         _postRepository = postRepository;
+        _userRepository = userRepository;
     }
 
     // GET - /Posts/{id}
@@ -26,7 +29,7 @@ public class PostsController : ControllerBase
             Id = post.Id,
             Body = post.Body,
             Title = post.Title,
-            Author = post.Author,
+            Author = post.User.Username,
             UserId = post.UserId
         };
         return Ok(dto);
@@ -36,34 +39,46 @@ public class PostsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetPostsAsync()
     {
-        var posts = await Task.Run(() => _postRepository.GetMany()
+        var posts = await _postRepository.GetMany()
             .Select(p => new PostDto
             {
                 Id = p.Id,
                 Body = p.Body,
                 Title = p.Title,
-                Author = p.Author,
+                Author = p.User.Username,
                 UserId = p.UserId
-            }).ToList());
+            }).ToListAsync();
         return Ok(posts);
     }
 
     // POST - create /Posts
     [HttpPost]
-    public async Task<ActionResult<PostDto>> CreatePostAsync([FromBody] PostDto request)
+    public async Task<ActionResult<PostDto>> CreatePostAsync([FromBody] CreatePostDto request)
     {
-        Console.WriteLine($"Received PostDto: Title={request.Title}, Body={request.Body}, UserId={request.UserId}, Author={request.Author}");
+        Console.WriteLine($"Received PostDto: Title={request.Title}, Body={request.Body}, UserId={request.UserId}");
         Post post = new()
         {
-            Body = request.Body,
             Title = request.Title,
-            Author = request.Author,
+            Body = request.Body,
             UserId = request.UserId
         };
         
         Post created = await _postRepository.AddAsync(post);
-        Console.WriteLine($"Post created: {created.Id}");
-        return Ok(created);
+        
+        // Load the user to get the username
+        User user = await _userRepository.GetSingleAsync(created.UserId);
+        
+        // Convert to DTO for returning
+        PostDto dto = new()
+        {
+            Id = created.Id,
+            Title = request.Title,
+            Body = request.Body,
+            Author = user.Username,
+            UserId = created.UserId
+        };
+        Console.WriteLine($"Post created: {dto.Id}");
+        return Ok(dto);
     }
 
     // PUT - update /Posts/{id}
@@ -81,7 +96,7 @@ public class PostsController : ControllerBase
             Id = post.Id, // maybe not needed for editing
             Title = post.Title,
             Body = post.Body,
-            Author = post.Author, // maybe not needed for editing
+            Author = post.User.Username, // maybe not needed for editing
             UserId = post.UserId // maybe not needed for editing
         };
         return Ok(new
